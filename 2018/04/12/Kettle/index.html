@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="kettle," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="​    因为我本地是window的，但是最后需要布置到linux上，所以这里主要记录下Linux上的安装部署，与定时调度。 ​    最近公司需要做一些数据抽取的需求，需要将mongodb内部分数据进行定时抽取，输入到MySQL中。我们的涛哥根据我们的实际情况选择了kettle，这个记录只是简单的使用说明，具体业务需求与配置就不多说了（我也是第一次接触，也没啥可说的，有不对的地方还望各位前辈指出">
+<meta name="keywords" content="kettle">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kettle的安装和简单使用(Linux)">
+<meta property="og:url" content="http://blog.duanshaojie.cn/2018/04/12/Kettle/index.html">
+<meta property="og:site_name" content="人生有多少个七年">
+<meta property="og:description" content="​    因为我本地是window的，但是最后需要布置到linux上，所以这里主要记录下Linux上的安装部署，与定时调度。 ​    最近公司需要做一些数据抽取的需求，需要将mongodb内部分数据进行定时抽取，输入到MySQL中。我们的涛哥根据我们的实际情况选择了kettle，这个记录只是简单的使用说明，具体业务需求与配置就不多说了（我也是第一次接触，也没啥可说的，有不对的地方还望各位前辈指出">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-12T08:30:17.169Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kettle的安装和简单使用(Linux)">
+<meta name="twitter:description" content="​    因为我本地是window的，但是最后需要布置到linux上，所以这里主要记录下Linux上的安装部署，与定时调度。 ​    最近公司需要做一些数据抽取的需求，需要将mongodb内部分数据进行定时抽取，输入到MySQL中。我们的涛哥根据我们的实际情况选择了kettle，这个记录只是简单的使用说明，具体业务需求与配置就不多说了（我也是第一次接触，也没啥可说的，有不对的地方还望各位前辈指出">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.duanshaojie.cn/2018/04/12/Kettle/"/>
+
+
+
+
+
+  <title>Kettle的安装和简单使用(Linux) | 人生有多少个七年</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+      <div class="site-meta-headline">
+        <a>
+          <img class="custom-logo-image" src="https://avatars2.githubusercontent.com/u/22759610?s=400&v=4"
+               alt="人生有多少个七年"/>
+        </a>
+      </div>
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">人生有多少个七年</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">桃之夭夭，灼灼其华</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.duanshaojie.cn/2018/04/12/Kettle/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="四">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生有多少个七年">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kettle的安装和简单使用(Linux)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-12T17:56:07+08:00">
+                2018-04-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/开发工具/" itemprop="url" rel="index">
+                    <span itemprop="name">开发工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>​    因为我本地是window的，但是最后需要布置到linux上，所以这里主要记录下Linux上的安装部署，与定时调度。</p>
+<p>​    最近公司需要做一些数据抽取的需求，需要将mongodb内部分数据进行定时抽取，输入到MySQL中。我们的涛哥根据我们的实际情况选择了kettle，这个记录只是简单的使用说明，具体业务需求与配置就不多说了（我也是第一次接触，也没啥可说的，有不对的地方还望各位前辈指出），话不多说，开始吧！</p>
+<a id="more"></a>
+<ul>
+<li><p>介绍</p>
+<p>​    Kettle是一款国外开源的ETL工具，纯java编写，可以在Window、Linux、Unix上运行。Kettle的中文名称叫水壶，名字真的是够通俗易懂的，该项目的主程序员MATT 希望把各种数据放到一个壶里，然后以一种指定的格式流出。window系统上可以直接使用图形化界面来编写任务（我就是在本地配好任务上传执行的-。-）</p>
+<p>​    Kettle家族目前包括4个产品：Spoon、Pan、CHEF、Kitchen。</p>
+<p>​    <strong>SPOON**</strong> **允许你通过图形界面来设计ETL转换过程（Transformation）。</p>
+<p>​    <strong>PAN**</strong> **允许你批量运行由Spoon设计的ETL转换 (例如使用一个时间调度器)。Pan是一个后台执行的程序，没有图形界面。</p>
+<p>​    <strong>CHEF </strong>允许你创建任务（Job）。 任务通过允许每个转换，任务，脚本等等，更有利于自动化更新数据仓库的复杂工作。任务通过允许每个转换，任务，脚本等等。任务将会被检查，看看是否正确地运行了。</p>
+<p>​    <strong>KITCHEN**</strong> **允许你批量使用由Chef设计的任务 (例如使用一个时间调度器)。KITCHEN也是一个后台运行的程序。</p>
+</li>
+<li><p>环境说明</p>
+<p>​    kettle的部署使用之前，我介绍下现在系统中安装的东西吧！    </p>
+<p>​    Mongodb</p>
+<p>​    MySQL</p>
+<p>​    Jdk</p>
+<p>这里具体安装和使用就不介绍了，我们讲的是kettle的使用嘛</p>
+</li>
+<li><p>Kettle部署配置</p>
+<p>Linux中Kettle文件结构</p>
+<p>​    将下载的Kettle解压到（data-integration）创建的Kettle文件夹下。这里需要进入data-integration目录下，并为目录下的.sh文件赋予权限</p>
+<p>1.cd /usr/local/kettle/data-integration  ###进入目录</p>
+<p>2.chmod +x *.sh ###赋予权限，结束后再键入./kitchen.sh 出现宝珠信息则表示成功</p>
+<p>​    接下来在Kettle文件夹下接着创建几个空文件夹ktllog，ktlsh和project文件夹。这样，我们的基本配置算是结束了；</p>
+</li>
+<li><p>创建任务及相关文件</p>
+<p>1.创建执行文件（这里我是在本地的window下Kettle中创建好的:) ）</p>
+<p>​    这里后面更新本地kettle使用过程吧，最后生成.ktr文件,并复制到前面创建的project文件夹中。</p>
+<p>2.创建job</p>
+<p>​    在ktllsh文件夹中新建文件 test.sh （在终端键入touch test.sh）并赋予权限 chmod  +x  test.sh</p>
+<p>编辑test.sh文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/sh</span><br><span class="line">source /etc/profile  </span><br><span class="line"> </span><br><span class="line">ROOT_TOPDIR=/usr/local/kettle</span><br><span class="line">Export ROOT_TOPDIR</span><br><span class="line">$ROOT_TOPDIR/data-integration/pan.sh -file=/usr/local/kettle/project/test.ktr</span><br></pre></td></tr></table></figure>
+<p>保存后在ktlsh目录下执行./test.sh，如果出现以下则表示成功了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">2017/08/25 14:34:57 - 字段选择.0 - Finished processing (I=0, O=0, R=1, W=1, U=0, E=0)</span><br><span class="line">2017/08/25 14:34:57 - MongoDB Input.0 - Finished processing (I=0, O=0, R=0, W=1, U=0, E=0)</span><br><span class="line">2017/08/25 14:34:57 - 表输出.0 - Finished processing (I=0, O=1, R=1, W=1, U=0, E=0)</span><br><span class="line">2017/08/25 14:34:57 - Pan - Finished!</span><br><span class="line">2017/08/25 14:34:57 - Pan - Start=2017/08/25 14:34:54.427, Stop=2017/08/25 14:34:57.422</span><br><span class="line">2017/08/25 14:34:57 - Pan - Processing ended after 2 seconds.</span><br><span class="line">2017/08/25 14:34:57 - demo mongo -  </span><br><span class="line">2017/08/25 14:34:57 - demo mongo - Step MongoDB Input.0 ended successfully, processed 1 lines. ( 0 lines/s)</span><br><span class="line">2017/08/25 14:34:57 - demo mongo - Step 字段选择.0 ended successfully, processed 1 lines. ( 0 lines/s)</span><br><span class="line">2017/08/25 14:34:57 - demo mongo - Step 表输出.0 ended successfully, processed 1 lines. ( 0 lines/s)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>定时任务配置</p>
+<p>如果上面的都成功了，接下来的就来做任务调度</p>
+<p>如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">crontab –e ###增加一行</span><br><span class="line">30 12 * * *  /usr/loca/kettle/ktlsh/test.sh &gt;&gt; /usr/local/kettle/ktllog/logtest    </span><br><span class="line">###如果ktllog下面不存在logtest文件会自动创建</span><br><span class="line">###配置完后重启crontab服务：</span><br><span class="line">Service crond restart</span><br><span class="line">###查看crontab服务</span><br><span class="line">Service crond status</span><br><span class="line">查看crontab中的内容</span><br><span class="line">Crontab –1</span><br></pre></td></tr></table></figure>
+<p>而调度时间的设置可自行Google或者百度</p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/kettle/" rel="tag"># kettle</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/12/jvm-1/" rel="next" title="JVM学习系列-运行时内存分配">
+                <i class="fa fa-chevron-left"></i> JVM学习系列-运行时内存分配
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/12/mark/" rel="prev" title="随记:致童年好了">
+                随记:致童年好了 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="四" />
+          <p class="site-author-name" itemprop="name">四</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://github.com/duanshaojie" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/duanshaojie" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:edison_dsj@163.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">四</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
