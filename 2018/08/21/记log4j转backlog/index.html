@@ -78,7 +78,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="JVM," />
+  <meta name="keywords" content="log4j logback," />
 
 
 
@@ -94,20 +94,18 @@
 
 
 
-<meta name="description" content="前言​    最近没什么状态，也没怎么打理博客。 ​    想了想，有些事，既然选择了，就走下去吧~ ​    JVM系列，算是边看边记，如若有误，还望海涵 :-)">
-<meta name="keywords" content="JVM">
+<meta name="description" content="从log4j转logback踩的坑​    因为一个未知的bug导致的需要去查找error日志，才发现这个项目不知从何时起，就已经不在打印log了，祖传项目果然厉害，然后开始了一段排查之旅:tw-203c: :tw-203c: :tw-203c:">
+<meta name="keywords" content="log4j logback">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JVM学习系列-运行时内存分配">
-<meta property="og:url" content="http://blog.duanshaojie.cn/2018/04/12/jvm-1/index.html">
+<meta property="og:title" content="从log4j转logback踩的坑">
+<meta property="og:url" content="http://blog.duanshaojie.cn/2018/08/21/记log4j转backlog/index.html">
 <meta property="og:site_name" content="人生有多少个七年">
-<meta property="og:description" content="前言​    最近没什么状态，也没怎么打理博客。 ​    想了想，有些事，既然选择了，就走下去吧~ ​    JVM系列，算是边看边记，如若有误，还望海涵 :-)">
+<meta property="og:description" content="从log4j转logback踩的坑​    因为一个未知的bug导致的需要去查找error日志，才发现这个项目不知从何时起，就已经不在打印log了，祖传项目果然厉害，然后开始了一段排查之旅:tw-203c: :tw-203c: :tw-203c:">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1513657456100&di=bf3a74648113c01743bd87068c019616&imgtype=0&src=http%3A%2F%2Fimages.cnitblog.com%2Fblog%2F412519%2F201410%2F160837090606014.png">
-<meta property="og:updated_time" content="2018-04-12T08:30:17.174Z">
+<meta property="og:updated_time" content="2018-08-21T10:47:03.900Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JVM学习系列-运行时内存分配">
-<meta name="twitter:description" content="前言​    最近没什么状态，也没怎么打理博客。 ​    想了想，有些事，既然选择了，就走下去吧~ ​    JVM系列，算是边看边记，如若有误，还望海涵 :-)">
-<meta name="twitter:image" content="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1513657456100&di=bf3a74648113c01743bd87068c019616&imgtype=0&src=http%3A%2F%2Fimages.cnitblog.com%2Fblog%2F412519%2F201410%2F160837090606014.png">
+<meta name="twitter:title" content="从log4j转logback踩的坑">
+<meta name="twitter:description" content="从log4j转logback踩的坑​    因为一个未知的bug导致的需要去查找error日志，才发现这个项目不知从何时起，就已经不在打印log了，祖传项目果然厉害，然后开始了一段排查之旅:tw-203c: :tw-203c: :tw-203c:">
 
 
 
@@ -136,13 +134,13 @@
 
 
 
-  <link rel="canonical" href="http://blog.duanshaojie.cn/2018/04/12/jvm-1/"/>
+  <link rel="canonical" href="http://blog.duanshaojie.cn/2018/08/21/记log4j转backlog/"/>
 
 
 
 
 
-  <title>JVM学习系列-运行时内存分配 | 人生有多少个七年</title>
+  <title>从log4j转logback踩的坑 | 人生有多少个七年</title>
   
 
 
@@ -292,7 +290,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.duanshaojie.cn/2018/04/12/jvm-1/">
+    <link itemprop="mainEntityOfPage" href="http://blog.duanshaojie.cn/2018/08/21/记log4j转backlog/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="四">
@@ -309,7 +307,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">JVM学习系列-运行时内存分配</h1>
+          <h1 class="post-title" itemprop="name headline">从log4j转logback踩的坑</h1>
         
 
         <div class="post-meta">
@@ -321,8 +319,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-12T17:56:07+08:00">
-                2018-04-12
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-21T18:46:05+08:00">
+                2018-08-21
               </time>
             
 
@@ -381,33 +379,43 @@
       
 
       
-        <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>​    最近没什么状态，也没怎么打理博客。</p>
-<p>​    想了想，有些事，既然选择了，就走下去吧~</p>
-<p>​    JVM系列，算是边看边记，如若有误，还望海涵 :-)</p>
+        <h1 id="从log4j转logback踩的坑"><a href="#从log4j转logback踩的坑" class="headerlink" title="从log4j转logback踩的坑"></a>从log4j转logback踩的坑</h1><p>​    因为一个未知的bug导致的需要去查找error日志，才发现这个项目不知从何时起，就已经不在打印log了，祖传项目果然厉害，然后开始了一段排查之旅:tw-203c: :tw-203c: :tw-203c:</p>
 <a id="more"></a>
-<p>​    java虚拟机在运行时会将内存划分为不用区域，详见下图：</p>
-<p><img src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1513657456100&amp;di=bf3a74648113c01743bd87068c019616&amp;imgtype=0&amp;src=http%3A%2F%2Fimages.cnitblog.com%2Fblog%2F412519%2F201410%2F160837090606014.png" alt=""></p>
 <ol>
-<li><h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><p>​    Java堆是JVM管理的最大的一块内存，因为几乎所有的对象内存空间都在Heap中分配，所以是线程共享的；所有的对象都在Heap中，所以GC进行垃圾回收最多的地方也是堆；</p>
-<p>​</p>
-</li>
-<li><h4 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h4><p>​    方法区存储的为被JVM加载的类，常量，静态变量，即时编译后的代码等数据；</p>
-<p>​    方法区也是线程共享的；</p>
-<ul>
-<li><h5 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h5><p>用于存放编译器形成的各种字面量和符号引用，这部分内容将在类加载后进入运行时常量池中存放</p>
-<p>​</p>
-</li>
-</ul>
-</li>
-<li><h4 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h4><p>​    虚拟栈描述的是java方法执行时的内存模型（JMM），每个方法在执行的时候会创建一个栈帧（stack frame），栈帧的数据结构包括局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从开始执行到退出的过程，及对应着栈帧在虚拟机栈中入栈到出栈的过程</p>
-<p>​    因为每一个线程都有一个线程栈，线程栈保存了线程运行时候的变量信息，而当线程获取对象的值时的过程是这样的（通过对象引用找到存在Heap中的对象 - &gt; 将对象的值load到线程本地内存中）,而对该对象的赋值，其实只是对本地内存中的对象副本的操作，堆中的对象还是原来的对象，直到线程退出之前的某个时刻，才会将副本中的值写入堆中~</p>
-</li>
-<li><h4 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h4><p>​    与虚拟机栈作用类似，区别是虚拟机栈为执行字节码服务，而本地方法栈为虚拟机使用到的native方法服务。由于虚拟机规范中没有对本地方法栈中使用的语言、数据结构做出强制规定，具体的虚拟机可以自由实现。Sun HotSpot虚拟机直接把虚拟机栈和本地方法栈合二为一。本地方法栈也会抛出stackOverFlow和OOM异常。</p>
-<p>​</p>
-</li>
-<li><h4 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h4><p>​    当前线程所执行的字节码的行号指示器，字节码解释器在工作时通过改变计数器的值来选取下一条需要执行的字节码指令</p>
-</li>
+<li>解决无法打印日志的问题</li>
 </ol>
+<hr>
+<p>​    这个问题比较好解决，在项目启动的时候发现有jar包冲突了，导致log4j日志没法打印。 因为我使用的是IDEA，所以这里也是使用IDEA做记录。</p>
+<p>​    怎么排除冲突jar包可以看这篇文章<a href="https://blog.csdn.net/qq_27093465/article/details/69226949" title="Intellij IDEA 中如何查看maven项目中所有jar包的依赖关系图" target="_blank" rel="noopener">Intellij IDEA 中如何查看maven项目中所有jar包的依赖关系图</a></p>
+<p>​    当我兴致冲冲准备提交上线的时候，路哥和我说这怎么还在用log4j呀，其他项目都是logback了。</p>
+<ol start="2">
+<li>log4j转logback</li>
+</ol>
+<hr>
+<p>​    本来以为很简单，不就是删掉log4j.properties，加上logback.xml 几分钟搞点，测试成功~</p>
+<p>​    但貌似不对呀，启动以后不停的刷日志，如下<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DEBUG(ClientCnxn.java:758)ClientCnxn:758 - Got ping response for sessionid: 0x1018d58af04377b after 1ms</span><br><span class="line">DEBUG(ClientCnxn.java:758)ClientCnxn:758 - Got ping response for sessionid: 0x1018d58af04377b after 1ms</span><br><span class="line">DEBUG(ClientCnxn.java:758)ClientCnxn:758 - Got ping response for sessionid: 0x1018d58af04377b after 1ms</span><br><span class="line">DEBUG(ClientCnxn.java:758)ClientCnxn:758 - Got ping response for sessionid: 0x1018d58af04377b after 1ms</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DEBUG(HeartBeatTask.java:66)HeartBeatTask:66 -  [DUBBO] Send heartbeat to remote channel /10.10.10.91:20809, cause: The channel has no data-transmission exceeds a heartbeat period: 60000ms, dubbo version: 2.4.7, current host: 192.168.4.215</span><br><span class="line">DEBUG(HeartbeatHandler.java:82)HeartbeatHandler:82 -  [DUBBO] Receive heartbeat response in thread New I/O client worker #1-2, dubbo version: 2.4.7, current host: 192.168.4.215</span><br><span class="line">DEBUG(HeartBeatTask.java:66)HeartBeatTask:66 -  [DUBBO] Send heartbeat to remote channel /10.10.10.46:20883, cause: The channel has no data-transmission exceeds a heartbeat period: 60000ms, dubbo version: 2.4.7, current host: 192.168.4.215</span><br><span class="line">DEBUG(HeartbeatHandler.java:82)HeartbeatHandler:82 -  [DUBBO] Receive heartbeat response in thread New I/O client worker #1-3, dubbo version: 2.4.7, current host: 192.168.4.215</span><br></pre></td></tr></table></figure>
+<p>​    从日志上看能够看出来是dubbo和Zookeper的日志，原以为是日志级别的问题，就在logback.xml加上如下代码，将他们的日志设为error级别<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;logger name="com.alibaba.dubbo" level="OFF" /&gt;</span><br><span class="line">&lt;logger name="org.apache.zookeeper.ClientCnxn" level="OFF" /&gt;</span><br></pre></td></tr></table></figure></p>
+<p>​    当然我上面是直接关了，你们可以看需求，但是然并卵。日志还是一如既往的刷刷刷~  我真的是脑子疼，项目启动慢就算了，你还如此冥王不顾，找死~</p>
+<p>​    然后我就沉下心来，仔细排除，发现这尼玛不是我logback.xml中设置的log格式呀，你们是石头里蹦出来的吧。第一反应就是，这是log4j和slf4j同时使用了吧，难道是jar包问题？ 一顿顿操作啪啪啪，排除所有log4j jar包，重启~一如既往的刷刷刷~ 好吧，看来不是这个问题</p>
+<ol start="3">
+<li>解决zookeeper日志问题</li>
+</ol>
+<hr>
+<p>​    排查中发现<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DEBUG(ClientCnxn.java:758)ClientCnxn:758 - Got ping response for sessionid: 0x1018d58af04377b after 1ms</span><br></pre></td></tr></table></figure></p>
+<p>这条日志中的‘ClientCnxn.class’源代码里面中的log包竟然是<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import org.apache.log4j.Logger;</span><br></pre></td></tr></table></figure></p>
+<p>​    网上找到了答案，原来，zookeeper 3.3.3里的ClientCnxn的log直接用log4j，zookeeper 3.4.3里的ClientCnxn用的是slf4j。好吧，把zookeeper换成3.4.3,重启，果然这条日志不刷了</p>
+<ol start="3">
+<li>解决dubbo日志问题</li>
+</ol>
+<hr>
+<p>在启动项目的时候发现这条日志<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INFO(?:?)LoggerFactory:? - using logger: com.alibaba.dubbo.common.logger.log4j.Log4jLoggerAdapter</span><br></pre></td></tr></table></figure></p>
+<p>怎么dubbo默认启动log4j的？只能去pom中找到dubbo 排除掉log4j架包~ 你以为就完了？重启，还是刷刷刷。。。</p>
+<p>​    好吧，不行那只能看源码了，果然不看不知道，一看吓一跳<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">static &#123;</span><br><span class="line">    String logger = System.getProperty("dubbo.application.logger");</span><br><span class="line">    if ("slf4j".equals(logger)) &#123;</span><br><span class="line">        setLoggerAdapter((LoggerAdapter)(new Slf4jLoggerAdapter()));</span><br><span class="line">    &#125; else if ("jcl".equals(logger)) &#123;</span><br><span class="line">        setLoggerAdapter((LoggerAdapter)(new JclLoggerAdapter()));</span><br><span class="line">    &#125; else if ("log4j".equals(logger)) &#123;</span><br><span class="line">        setLoggerAdapter((LoggerAdapter)(new Log4jLoggerAdapter()));</span><br><span class="line">    &#125; else if ("jdk".equals(logger)) &#123;</span><br><span class="line">        setLoggerAdapter((LoggerAdapter)(new JdkLoggerAdapter()));</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            setLoggerAdapter((LoggerAdapter)(new Log4jLoggerAdapter()));</span><br><span class="line">        &#125; catch (Throwable var6) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                setLoggerAdapter((LoggerAdapter)(new Slf4jLoggerAdapter()));</span><br><span class="line">            &#125; catch (Throwable var5) &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    setLoggerAdapter((LoggerAdapter)(new JclLoggerAdapter()));</span><br><span class="line">                &#125; catch (Throwable var4) &#123;</span><br><span class="line">                    setLoggerAdapter((LoggerAdapter)(new JdkLoggerAdapter()));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>​    原来如果没有设置输出日志类型，dubbo中默认的日志是log4j，这这这，哎哟，我今天真的是脑壳疼了。网上答案是说在启动的时候设置System.getProperty(“dubbo.application.logger”)这个参数为slf4j</p>
+<p>​    好吧直接上代码<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class Slf4jConfig extends ContextLoaderListener &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void contextInitialized(ServletContextEvent event) &#123;</span><br><span class="line">        System.setProperty("dubbo.application.logger","slf4j");</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>​    web.xml<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;listener&gt;</span><br><span class="line">    &lt;listener-class&gt;com.galaxy.wap.core.Slf4jConfig&lt;/listener-class&gt;</span><br><span class="line">&lt;/listener&gt;</span><br></pre></td></tr></table></figure></p>
+<p>​    启动，完成，果然源码的重要性立马凸显了</p>
 
       
     </div>
@@ -425,7 +433,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/JVM/" rel="tag"># JVM</a>
+            <a href="/tags/log4j-logback/" rel="tag"># log4j logback</a>
           
         </div>
       
@@ -438,8 +446,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/04/12/FreeMarkerTest/" rel="next" title="">
-                <i class="fa fa-chevron-left"></i> 
+              <a href="/2018/07/12/test/" rel="next" title="获取唯一号之UUID">
+                <i class="fa fa-chevron-left"></i> 获取唯一号之UUID
               </a>
             
           </div>
@@ -447,10 +455,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/04/12/Kettle/" rel="prev" title="Kettle的安装和简单使用(Linux)">
-                Kettle的安装和简单使用(Linux) <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -619,7 +623,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#堆"><span class="nav-number">2.</span> <span class="nav-text">堆</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法区"><span class="nav-number">3.</span> <span class="nav-text">方法区</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#运行时常量池"><span class="nav-number">3.1.</span> <span class="nav-text">运行时常量池</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#虚拟机栈"><span class="nav-number">4.</span> <span class="nav-text">虚拟机栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#本地方法栈"><span class="nav-number">5.</span> <span class="nav-text">本地方法栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#程序计数器"><span class="nav-number">6.</span> <span class="nav-text">程序计数器</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#从log4j转logback踩的坑"><span class="nav-number">1.</span> <span class="nav-text">从log4j转logback踩的坑</span></a></li></ol></div>
             
 
           </div>
