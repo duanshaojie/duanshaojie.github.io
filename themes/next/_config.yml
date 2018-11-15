@@ -39,6 +39,10 @@ seo: false
 # subtitle: Subtitle
 index_with_subtitle: false
 
+# 收錄
+baidu_site_verification: true
+google_site_verification: true
+
 
 # ---------------------------------------------------------------
 # Menu Settings

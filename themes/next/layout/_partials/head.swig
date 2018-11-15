@@ -31,21 +31,9 @@
 <meta http-equiv="Cache-Control" content="no-transform" />
 <meta http-equiv="Cache-Control" content="no-siteapp" />
 
-
-{% if theme.google_site_verification %}
-  <meta name="google-site-verification" content="{{ theme.google_site_verification }}" />
-{% endif %}
-
-
 {% if theme.yandex_site_verification %}
   <meta name="yandex-verification" content="{{ theme.yandex_site_verification }}" />
 {% endif %}
-
-
-{% if theme.baidu_site_verification %}
-  <meta name="baidu-site-verification" content="{{ theme.baidu_site_verification }}" />
-{% endif %}
-
 
 {% if theme.qihu_site_verification %}
   <meta name="360-site-verification" content="{{ theme.qihu_site_verification }}" />
@@ -78,6 +66,13 @@
   <meta name="keywords" content="{{ theme.keywords }}" />
 {% endif %}
 
+{% if theme.baidu_site_verification %}
+  <meta name="baidu-site-verification" content="8fkL3heHS5" />
+{% endif %}
+
+{% if theme.google_site_verification %}
+  <meta name="google-site-verification" content="DH7BEqCmsWNnQiFZhrKFXBz67e1oyUeIMfllrsYtukU" />
+{% endif %}
 
 {% if theme.rss === '' and config.feed and config.feed.path %}
   {% set theme.rss = config.feed.path %}
@@ -85,7 +80,6 @@
 {% if theme.rss %}
   <link rel="alternate" href="{{ url_for(theme.rss) }}" title="{{ config.title }}" type="application/atom+xml" />
 {% endif %}
-
 
 {% if theme.favicon %}
   <link rel="shortcut icon" type="image/x-icon" href="{{ url_for(theme.favicon) }}?v={{ theme.version }}" />
@@ -96,7 +90,6 @@
   <meta property="fb:admins" content="{{ theme.facebook_sdk.fb_admin }}" />
   <meta property="fb:app_id" content="{{ theme.facebook_sdk.app_id }}" />
 {% endif %}
-
 
 {{
   open_graph({
