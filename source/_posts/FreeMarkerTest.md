@@ -1,3 +1,10 @@
+---
+title: FreeMarker的简单使用
+tags: freeMarker
+categories: java
+---
+
+
 1. 前言
 
 ------

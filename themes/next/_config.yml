@@ -55,6 +55,7 @@ menu:
   about: /about/
   archives: /archives/
   tags: /tags/
+  guestbook: /guestbook
   #sitemap: /sitemap.xml
   #commonweal: /404/
 
@@ -674,3 +675,12 @@ images: images
 
 # Theme version
 version: 5.1.2
+
+#gitalk settings
+gitalk:
+  enable: true 
+  owner:    duanshaojie
+  repo:    duanshaojie.github.io 
+  admin:    duanshaojie 
+  clientID: 83135870a07a6d067622 
+  clientSecret: eaefd8f7b31afd0d58b8439ea9d1f10ced93278b

@@ -31,3 +31,22 @@
     {% endif %}
   </div>
 {% endif %}
+
+{% if theme.gitalk.enable %}
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<div id="gitalk-container"></div>
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="/js/src/md5.min.js"></script>
+	<script type="text/javascript">
+		var gitalk = new Gitalk({
+			clientID: '{{ theme.gitalk.clientID }}',
+			clientSecret: '{{ theme.gitalk.clientSecret }}',
+			id: md5(location.pathname),
+			repo: '{{ theme.gitalk.repo }}',
+			owner: '{{ theme.gitalk.owner }}',
+			admin: ['{{ theme.gitalk.admin }}']
+		})
+		gitalk.render('gitalk-container')
+	</script>
+{% endif %}
+
