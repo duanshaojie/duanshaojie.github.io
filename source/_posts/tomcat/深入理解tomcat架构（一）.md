@@ -1,7 +1,7 @@
 ---
 title: 深入理解Tomcat架构（一）
 tags: tomcat
-categories: java
+categories: 中间件
 ---
 
    在工作中，我虽然经常使用Tomcat部署项目，却没有深入理解它的架构原理，这篇文章算是记录下自己学习的成果。
