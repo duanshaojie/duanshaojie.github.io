@@ -363,6 +363,5 @@ public class ExceptionFilter extends ListenableFilter  {
 
 ##     碰到的问题
 
-*   dubbo2.7.2以后RpcResult没有了，详见[《升级到2.7.2后，怎么没有RpcResult类了？用什么代替呢？》]("https://github.com/apache/dubbo/issues/4282")
-
-*   java.lang.UnsupportedOperationException:AppResponse represents an concrete business response, there will be no status changes, you should get internal values directly.详见[《dubbo》]("https://github.com/apache/dubbo/issues/4717")
+*   dubbo2.7.2以后RpcResult没有了，详见<a href="https://github.com/apache/dubbo/issues/4282" target="_blank">《升级到2.7.2后，怎么没有RpcResult类了？用什么代替呢？》</a>
+*   java.lang.UnsupportedOperationException:AppResponse represents an concrete business response, there will be no status changes, you should get internal values directly.详见<a href="https://github.com/apache/dubbo/issues/4717" target="_blank">《dubbo》</a>
