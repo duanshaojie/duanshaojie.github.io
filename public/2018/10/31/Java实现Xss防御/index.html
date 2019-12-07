@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Xss," />
+
+
+
+  <meta name="baidu-site-verification" content="8fkL3heHS5" />
+
+
+
+  <meta name="google-site-verification" content="DH7BEqCmsWNnQiFZhrKFXBz67e1oyUeIMfllrsYtukU" />
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+<meta name="description" content="简述什么是Xss攻击呢？就是Cross Site Scripting（跨站脚本攻击），缩写就是Xss。简单来说，就是恶意攻击者，利用存库等操作将Script代码存入数据库中，当有用户读取时执行，以达到攻击获取隐私数据的目的，本文为简单介绍防御方式。">
+<meta name="keywords" content="Xss">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java防止Xss攻击">
+<meta property="og:url" content="http://blog.duanshaojie.cn/2018/10/31/Java实现Xss防御/index.html">
+<meta property="og:site_name" content="人生有多少个七年">
+<meta property="og:description" content="简述什么是Xss攻击呢？就是Cross Site Scripting（跨站脚本攻击），缩写就是Xss。简单来说，就是恶意攻击者，利用存库等操作将Script代码存入数据库中，当有用户读取时执行，以达到攻击获取隐私数据的目的，本文为简单介绍防御方式。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-11-14T07:12:16.847Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java防止Xss攻击">
+<meta name="twitter:description" content="简述什么是Xss攻击呢？就是Cross Site Scripting（跨站脚本攻击），缩写就是Xss。简单来说，就是恶意攻击者，利用存库等操作将Script代码存入数据库中，当有用户读取时执行，以达到攻击获取隐私数据的目的，本文为简单介绍防御方式。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.duanshaojie.cn/2018/10/31/Java实现Xss防御/"/>
+
+
+
+
+
+  <title>Java防止Xss攻击 | 人生有多少个七年</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+      <div class="site-meta-headline">
+        <a>
+          <img class="custom-logo-image" src="https://avatars2.githubusercontent.com/u/22759610?s=400&v=4"
+               alt="人生有多少个七年"/>
+        </a>
+      </div>
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">人生有多少个七年</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">桃之夭夭，灼灼其华</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-guestbook">
+          <a href="/guestbook" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            留言
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.duanshaojie.cn/2018/10/31/Java实现Xss防御/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="四">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生有多少个七年">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java防止Xss攻击</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-31T15:34:26+08:00">
+                2018-10-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h1><p>什么是Xss攻击呢？就是Cross Site Scripting（跨站脚本攻击），缩写就是Xss。简单来说，就是恶意<br>攻击者，利用存库等操作将Script代码存入数据库中，当有用户读取时执行，以达到攻击获取隐私数据<br>的目的，本文为简单介绍防御方式。</p>
+<a id="more"></a>
+<h1 id="servlet防御"><a href="#servlet防御" class="headerlink" title="servlet防御"></a>servlet防御</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public class XssRequestWrapper extends HttpServletRequestWrapper &#123;</span><br><span class="line"></span><br><span class="line">    public XssRequestWrapper(HttpServletRequest servletRequest) &#123;</span><br><span class="line">        super(servletRequest);</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public String[] getParameterValues(String parameter) &#123;</span><br><span class="line">        String[] values = super.getParameterValues(parameter);</span><br><span class="line">        if (values == null) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">        int count = values.length;</span><br><span class="line">        String[] encodedValues = new String[count];</span><br><span class="line">        for (int i = 0; i &lt; count; i++) &#123;</span><br><span class="line">            encodedValues[i] = HtmlUtils.htmlEscape(values[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        return encodedValues;</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public String getParameter(String parameter) &#123;</span><br><span class="line">        String value = super.getParameter(parameter);</span><br><span class="line">        return HtmlUtils.htmlEscape(value);</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public String getHeader(String name) &#123;</span><br><span class="line">        String value = super.getHeader(name);</span><br><span class="line">        return HtmlUtils.htmlEscape(value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>上面的HtmlUtils.htmlEscape() 我换成了下面的XssEncodeUtils,我个人比较喜欢<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">public class XssEncodeUtils &#123;</span><br><span class="line"></span><br><span class="line">    public static String stripXSS(String value) &#123;</span><br><span class="line">        if (value != null) &#123;</span><br><span class="line">            // NOTE: It&apos;s highly recommended to use the ESAPI library and uncomment the following line to</span><br><span class="line">            // avoid encoded attacks.</span><br><span class="line">            // value = ESAPI.encoder().canonicalize(value);</span><br><span class="line"></span><br><span class="line">            // Avoid null characters</span><br><span class="line">            value = value.replaceAll(&quot;&quot;, &quot;&quot;);</span><br><span class="line"></span><br><span class="line">            // Avoid anything between script tags</span><br><span class="line">            Pattern scriptPattern = Pattern.compile(&quot;&lt;script&gt;(.*?)&lt;/script&gt;&quot;, Pattern.CASE_INSENSITIVE);</span><br><span class="line">            value = scriptPattern.matcher(value).replaceAll(&quot;&quot;);</span><br><span class="line"></span><br><span class="line">            // Avoid anything in a src=&apos;...&apos; type of e­xpression</span><br><span class="line">            scriptPattern = Pattern.compile(&quot;src[\r\n]*=[\r\n]*\\\&apos;(.*?)\\\&apos;&quot;, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);</span><br><span class="line">            value = scriptPattern.matcher(value).replaceAll(&quot;&quot;);</span><br><span class="line"></span><br><span class="line">            scriptPattern = Pattern.compile(&quot;src[\r\n]*=[\r\n]*\\\&quot;(.*?)\\\&quot;&quot;, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);</span><br><span class="line">            value = scriptPattern.matcher(value).replaceAll(&quot;&quot;);</span><br><span class="line"></span><br><span class="line">            // Remove any lonesome &lt;/script&gt; tag</span><br><span class="line">            scriptPattern = Pattern.compile(&quot;&lt;/script&gt;&quot;, Pattern.CASE_INSENSITIVE);</span><br><span class="line">            value = scriptPattern.matcher(value).replaceAll(&quot;&quot;);</span><br><span class="line"></span><br><span class="line">            // Remove any lonesome &lt;script ...&gt; tag</span><br><span class="line">            scriptPattern = Pattern.compile(&quot;&lt;script(.*?)&gt;&quot;, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);</span><br><span class="line">            value = scriptPattern.matcher(value).replaceAll(&quot;&quot;);</span><br><span class="line"></span><br><span class="line">            // Avoid eval(...) e­xpressions</span><br><span class="line">            scriptPattern = Pattern.compile(&quot;eval\\((.*?)\\)&quot;, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);</span><br><span class="line">            value = scriptPattern.matcher(value).replaceAll(&quot;&quot;);</span><br><span class="line"></span><br><span class="line">            // Avoid e­xpression(...) e­xpressions</span><br><span class="line">            scriptPattern = Pattern.compile(&quot;e­xpression\\((.*?)\\)&quot;, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);</span><br><span class="line">            value = scriptPattern.matcher(value).replaceAll(&quot;&quot;);</span><br><span class="line"></span><br><span class="line">            // Avoid javascript:... e­xpressions</span><br><span class="line">            scriptPattern = Pattern.compile(&quot;javascript:&quot;, Pattern.CASE_INSENSITIVE);</span><br><span class="line">            value = scriptPattern.matcher(value).replaceAll(&quot;&quot;);</span><br><span class="line"></span><br><span class="line">            // Avoid vbscript:... e­xpressions</span><br><span class="line">            scriptPattern = Pattern.compile(&quot;vbscript:&quot;, Pattern.CASE_INSENSITIVE);</span><br><span class="line">            value = scriptPattern.matcher(value).replaceAll(&quot;&quot;);</span><br><span class="line"></span><br><span class="line">            // Avoid onload= e­xpressions</span><br><span class="line">            scriptPattern = Pattern.compile(&quot;onload(.*?)=&quot;, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);</span><br><span class="line">            value = scriptPattern.matcher(value).replaceAll(&quot;&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        return value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="Mybatis防御"><a href="#Mybatis防御" class="headerlink" title="Mybatis防御"></a>Mybatis防御</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public class XssStringTypeHandler extends BaseTypeHandler&lt;String&gt; &#123;</span><br><span class="line">    private static final Escaper XSS_ESCAPER = HtmlEscapers.htmlEscaper();</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void setNonNullParameter(PreparedStatement ps, int i, String parameter, JdbcType jdbcType) throws SQLException &#123;</span><br><span class="line">        Pattern emoji = Pattern.compile (&quot;[\ud83c\udc00-\ud83c\udfff]|[\ud83d\udc00-\ud83d\udfff]|[\u2600-\u27ff]&quot;,Pattern.UNICODE_CASE | Pattern . CASE_INSENSITIVE ) ;</span><br><span class="line">        Matcher emojiMatcher = emoji.matcher(parameter);</span><br><span class="line">        if ( emojiMatcher.find())</span><br><span class="line">        &#123;</span><br><span class="line">            parameter = emojiMatcher.replaceAll(&quot;*&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        ps.setString(i, XSS_ESCAPER.escape(parameter));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String getNullableResult(ResultSet rs, String columnName) throws SQLException &#123;</span><br><span class="line">        return rs.getString(columnName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String getNullableResult(ResultSet rs, int columnIndex) throws SQLException &#123;</span><br><span class="line">        return rs.getString(columnIndex);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String getNullableResult(CallableStatement cs, int columnIndex) throws SQLException &#123;</span><br><span class="line">        return cs.getString(columnIndex);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>mybatis-configuration.xml<br>typeHandlers中必须要添加需要过滤的字段类型<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE configuration PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot;</span><br><span class="line">        &quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;&gt;</span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;!-- 配置mybatis的缓存，延迟加载等等一系列属性 --&gt;</span><br><span class="line">    &lt;settings&gt;</span><br><span class="line">        &lt;!-- 全局映射器启用缓存 --&gt;</span><br><span class="line">        &lt;setting name=&quot;cacheEnabled&quot; value=&quot;false&quot;/&gt;</span><br><span class="line">        &lt;!-- 查询时，关闭关联对象即时加载以提高性能 --&gt;</span><br><span class="line">        &lt;setting name=&quot;lazyLoadingEnabled&quot; value=&quot;false&quot;/&gt;</span><br><span class="line">        &lt;!-- 设置关联对象加载的形态，此处为按需加载字段(加载字段由SQL指 定)，不会加载关联表的所有字段，以提高性能 --&gt;</span><br><span class="line">        &lt;setting name=&quot;aggressiveLazyLoading&quot; value=&quot;false&quot;/&gt;</span><br><span class="line">        &lt;!-- 对于未知的SQL查询，允许返回不同的结果集以达到通用的效果 --&gt;</span><br><span class="line">        &lt;setting name=&quot;multipleResultSetsEnabled&quot; value=&quot;true&quot;/&gt;</span><br><span class="line">        &lt;!-- 允许使用列标签代替列名 --&gt;</span><br><span class="line">        &lt;setting name=&quot;useColumnLabel&quot; value=&quot;true&quot;/&gt;</span><br><span class="line">        &lt;!-- 允许使用自定义的主键值(比如由程序生成的UUID 32位编码作为键值)，数据表的PK生成策略将被覆盖 --&gt;</span><br><span class="line">        &lt;!-- &lt;setting name=&quot;useGeneratedKeys&quot; value=&quot;true&quot; /&gt; --&gt;</span><br><span class="line">        &lt;!-- 给予被嵌套的resultMap以字段-属性的映射支持 --&gt;</span><br><span class="line">        &lt;setting name=&quot;autoMappingBehavior&quot; value=&quot;FULL&quot;/&gt;</span><br><span class="line">        &lt;!-- 对于批量更新操作缓存SQL以提高性能 --&gt;</span><br><span class="line">        &lt;setting name=&quot;defaultExecutorType&quot; value=&quot;REUSE&quot;/&gt;</span><br><span class="line">        &lt;!-- 数据库超过25000秒仍未响应则超时 --&gt;</span><br><span class="line">        &lt;setting name=&quot;defaultStatementTimeout&quot; value=&quot;25000&quot;/&gt;</span><br><span class="line">    &lt;/settings&gt;</span><br><span class="line"></span><br><span class="line">    &lt;typeHandlers&gt;</span><br><span class="line">        &lt;typeHandler javaType=&quot;String&quot; jdbcType=&quot;VARCHAR&quot;</span><br><span class="line">                     handler=&quot;com.galaxy.cobra.XssStringTypeHandler&quot;/&gt;</span><br><span class="line">        &lt;!--&lt;typeHandler javaType=&quot;String&quot; jdbcType=&quot;LONGVARCHAR&quot;--&gt;</span><br><span class="line">                     &lt;!--handler=&quot;com.galaxy.cobra.XssStringTypeHandler&quot;/&gt;--&gt;</span><br><span class="line">    &lt;/typeHandlers&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Xss/" rel="tag"># Xss</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/31/FreeMarkerTest/" rel="next" title="FreeMarker的简单使用">
+                <i class="fa fa-chevron-left"></i> FreeMarker的简单使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/31/jvm-1/" rel="prev" title="JVM学习系列-运行时内存分配">
+                JVM学习系列-运行时内存分配 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<div id="gitalk-container"></div>
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="/js/src/md5.min.js"></script>
+	<script type="text/javascript">
+		var gitalk = new Gitalk({
+			clientID: '83135870a07a6d067622',
+			clientSecret: 'eaefd8f7b31afd0d58b8439ea9d1f10ced93278b',
+			id: md5(location.pathname),
+			repo: 'duanshaojie.github.io',
+			owner: 'duanshaojie',
+			admin: ['duanshaojie']
+		})
+		gitalk.render('gitalk-container')
+	</script>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="四" />
+          <p class="site-author-name" itemprop="name">四</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://github.com/duanshaojie" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/duanshaojie" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:edison_dsj@163.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简述"><span class="nav-number">1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#servlet防御"><span class="nav-number">2.</span> <span class="nav-text">servlet防御</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mybatis防御"><span class="nav-number">3.</span> <span class="nav-text">Mybatis防御</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">四</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

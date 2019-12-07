@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java8," />
+
+
+
+  <meta name="baidu-site-verification" content="8fkL3heHS5" />
+
+
+
+  <meta name="google-site-verification" content="DH7BEqCmsWNnQiFZhrKFXBz67e1oyUeIMfllrsYtukU" />
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+<meta name="description" content="简述   在刚使用Java编写代码的时候，我碰到最多的错误可能就是NullPointerException,后来慢慢的开始使用if-else来规避，但是大量的if-else真的很难看，可读性也非常差。而Java 8引入的这个新类java.util.Optional可以使用简单的代码解决这个问题，就记录下学习的过程吧。">
+<meta name="keywords" content="java8">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何使用Optional摆脱空指针">
+<meta property="og:url" content="http://blog.duanshaojie.cn/2019/07/30/java8/如何使用Optional摆脱空指针/index.html">
+<meta property="og:site_name" content="人生有多少个七年">
+<meta property="og:description" content="简述   在刚使用Java编写代码的时候，我碰到最多的错误可能就是NullPointerException,后来慢慢的开始使用if-else来规避，但是大量的if-else真的很难看，可读性也非常差。而Java 8引入的这个新类java.util.Optional可以使用简单的代码解决这个问题，就记录下学习的过程吧。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-30T08:39:39.877Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何使用Optional摆脱空指针">
+<meta name="twitter:description" content="简述   在刚使用Java编写代码的时候，我碰到最多的错误可能就是NullPointerException,后来慢慢的开始使用if-else来规避，但是大量的if-else真的很难看，可读性也非常差。而Java 8引入的这个新类java.util.Optional可以使用简单的代码解决这个问题，就记录下学习的过程吧。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.duanshaojie.cn/2019/07/30/java8/如何使用Optional摆脱空指针/"/>
+
+
+
+
+
+  <title>如何使用Optional摆脱空指针 | 人生有多少个七年</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+      <div class="site-meta-headline">
+        <a>
+          <img class="custom-logo-image" src="https://avatars2.githubusercontent.com/u/22759610?s=400&v=4"
+               alt="人生有多少个七年"/>
+        </a>
+      </div>
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">人生有多少个七年</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">桃之夭夭，灼灼其华</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-guestbook">
+          <a href="/guestbook" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            留言
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.duanshaojie.cn/2019/07/30/java8/如何使用Optional摆脱空指针/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="四">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生有多少个七年">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何使用Optional摆脱空指针</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-30T16:36:06+08:00">
+                2019-07-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>   在刚使用Java编写代码的时候，我碰到最多的错误可能就是NullPointerException,后来慢慢的开始使用if-else来规避，<br>但是大量的if-else真的很难看，可读性也非常差。而Java 8引入的这个新类java.util.Optional<t>可以使用简单的代码解决这个问题，就记录下学习的过程吧。</t></p>
+<a id="more"></a>
+<h2 id="Optional的常用方法"><a href="#Optional的常用方法" class="headerlink" title="Optional的常用方法"></a>Optional的常用方法</h2><p>   这里主要使用源码来解读Optional，如下<br>   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 这是一个包含null或者非null值得容器，当值不为空，isPresent()返回true，并且get()</span><br><span class="line"> * 将返回这个值；</span><br><span class="line"> *</span><br><span class="line"> * 提供了取决于值是否存在的方法</span><br><span class="line"> * 如orElse()，当值不存在时返回一个默认的值；</span><br><span class="line"> * 如ifPresent()，当值存在执行。</span><br><span class="line"> *</span><br><span class="line"> * 这是一个基于价值的类，应避免使用使用对象比较（==），标识Hash或同步</span><br><span class="line"> * @since 1.8</span><br><span class="line"> */</span><br><span class="line">public final class Optional&lt;T&gt; &#123;</span><br><span class="line">    /**</span><br><span class="line">     * 通用实例（一个空的实例）</span><br><span class="line">     */</span><br><span class="line">    private static final Optional&lt;?&gt; EMPTY = new Optional&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Optional的值</span><br><span class="line">     */</span><br><span class="line">    private final T value;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 构造器，一个空值</span><br><span class="line">     */</span><br><span class="line">    private Optional() &#123;</span><br><span class="line">        this.value = null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 返回一个空值得实例</span><br><span class="line">     */</span><br><span class="line">    public static&lt;T&gt; Optional&lt;T&gt; empty() &#123;</span><br><span class="line">        @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">        Optional&lt;T&gt; t = (Optional&lt;T&gt;) EMPTY;</span><br><span class="line">        return t;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 默认值得Optional</span><br><span class="line">     * 如果传入值为空则抛出NullPointerException异常</span><br><span class="line">     */</span><br><span class="line">    private Optional(T value) &#123;</span><br><span class="line">        this.value = Objects.requireNonNull(value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static &lt;T&gt; Optional&lt;T&gt; of(T value) &#123;</span><br><span class="line">        return new Optional&lt;&gt;(value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 如果为空则返回空Optional</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; Optional&lt;T&gt; ofNullable(T value) &#123;</span><br><span class="line">        return value == null ? empty() : of(value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 获取Optional值，若为空则抛异常</span><br><span class="line">     */</span><br><span class="line">    public T get() &#123;</span><br><span class="line">        if (value == null) &#123;</span><br><span class="line">            throw new NoSuchElementException(&quot;No value present&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        return value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Optional 值是否为空呢</span><br><span class="line">     */</span><br><span class="line">    public boolean isPresent() &#123;</span><br><span class="line">        return value != null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 如果值不为空，则执行consumer</span><br><span class="line">     */</span><br><span class="line">    public void ifPresent(Consumer&lt;? super T&gt; consumer) &#123;</span><br><span class="line">        if (value != null)</span><br><span class="line">            consumer.accept(value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 如果值不为空，并且匹配predicate，则返回这个值</span><br><span class="line">     */</span><br><span class="line">    public Optional&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate) &#123;</span><br><span class="line">        Objects.requireNonNull(predicate);</span><br><span class="line">        if (!isPresent())</span><br><span class="line">            return this;</span><br><span class="line">        else</span><br><span class="line">            return predicate.test(value) ? this : empty();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 如果值存在，则将映射函数应用于这个值，否则返回Optional</span><br><span class="line">     * &lt;pre&gt;&#123;@code</span><br><span class="line">     *     Optional&lt;FileInputStream&gt; fis =</span><br><span class="line">     *         names.stream().filter(name -&gt; !isProcessedYet(name))</span><br><span class="line">     *                       .findFirst()</span><br><span class="line">     *                       .map(name -&gt; new FileInputStream(name));</span><br><span class="line">     * &#125;&lt;/pre&gt;</span><br><span class="line">     */</span><br><span class="line">    public&lt;U&gt; Optional&lt;U&gt; map(Function&lt;? super T, ? extends U&gt; mapper) &#123;</span><br><span class="line">        Objects.requireNonNull(mapper);</span><br><span class="line">        if (!isPresent())</span><br><span class="line">            return empty();</span><br><span class="line">        else &#123;</span><br><span class="line">            return Optional.ofNullable(mapper.apply(value));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 如果值存在，将提供的Optional-bearing映射于该函数，否则返回空Optional；</span><br><span class="line">     * 类似于Map()，但映射器是一个Optional结果</span><br><span class="line">     */</span><br><span class="line">    public&lt;U&gt; Optional&lt;U&gt; flatMap(Function&lt;? super T, Optional&lt;U&gt;&gt; mapper) &#123;</span><br><span class="line">        Objects.requireNonNull(mapper);</span><br><span class="line">        if (!isPresent())</span><br><span class="line">            return empty();</span><br><span class="line">        else &#123;</span><br><span class="line">            return Objects.requireNonNull(mapper.apply(value));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 如果值存在则返回它，否则返回写入的值</span><br><span class="line">     * 无论值是否存在都会执行</span><br><span class="line">     */</span><br><span class="line">    public T orElse(T other) &#123;</span><br><span class="line">        return value != null ? value : other;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 如果存在返回值，否则返回other的值</span><br><span class="line">     * 只有值不存在时才会执行</span><br><span class="line">     */</span><br><span class="line">    public T orElseGet(Supplier&lt;? extends T&gt; other) &#123;</span><br><span class="line">        return value != null ? value : other.get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 如果值不为空，返回这个值，否则抛出异常</span><br><span class="line">     */</span><br><span class="line">    public &lt;X extends Throwable&gt; T orElseThrow(Supplier&lt;? extends X&gt; exceptionSupplier) throws X &#123;</span><br><span class="line">        if (value != null) &#123;</span><br><span class="line">            return value;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            throw exceptionSupplier.get();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 值比较</span><br><span class="line">     */</span><br><span class="line">    @Override</span><br><span class="line">    public boolean equals(Object obj) &#123;</span><br><span class="line">        if (this == obj) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (!(obj instanceof Optional)) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Optional&lt;?&gt; other = (Optional&lt;?&gt;) obj;</span><br><span class="line">        return Objects.equals(value, other.value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 值hash</span><br><span class="line">     */</span><br><span class="line">    @Override</span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        return Objects.hashCode(value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return value != null</span><br><span class="line">            ? String.format(&quot;Optional[%s]&quot;, value)</span><br><span class="line">            : &quot;Optional.empty&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Optional的使用"><a href="#Optional的使用" class="headerlink" title="Optional的使用"></a>Optional的使用</h2><pre><code>针对上面源码的方法，总结一些使用。本人算是初次使用，如有错误还望指正交流~~
+</code></pre><ul>
+<li><p>在下面的案例中，由于没有“James”的用户信息，直接使用userEntity会抛出java.lang.NullPointerException异常。<br>所以你在使用的时候，需要增加if(null != userEntity)。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    UserEntity userEntity = queryUserEntityByName(&quot;James&quot;);</span><br><span class="line">    System.out.println(userEntity.getName());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static UserEntity queryUserEntityByName(String name) &#123;</span><br><span class="line">    Map&lt;String, UserEntity&gt; userEntityMap = new HashMap&lt;&gt;(1);</span><br><span class="line">    userEntityMap.put(&quot;edison&quot;, new UserEntity(&quot;edison&quot;, 2L));</span><br><span class="line">    return userEntityMap.get(name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>而使用了Optional的代码如下，因为返回的是Optional，该对象是一个包含空或非空的容器。<br>下面如果直接使用userOptional.get(),那么当“Jame”不存在的时候就会抛出异常，所以我们给userOptional增加一个<br>默认的UserEntity</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    Optional&lt;UserEntity&gt; userOptional = queryUserEntityByName(&quot;James&quot;);</span><br><span class="line">    System.out.println(userOptional.orElse(new UserEntity()).getName());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static Optional queryUserEntityByName(String name) &#123;</span><br><span class="line">    Map&lt;String, UserEntity&gt; userEntityMap = new HashMap&lt;&gt;(1);</span><br><span class="line">    userEntityMap.put(&quot;edison&quot;, new UserEntity(&quot;edison&quot;, 2L));</span><br><span class="line">    return Optional.ofNullable(userEntityMap.get(name));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>上面的案例还可以使用如下来避免空指针,orElseGet()与orElse()的区别在于，orElse()无论值是否为空都会执行一遍；<br>而orElseGet()只有当值为空时，才会执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(userOptional.orElseGet(() -&gt; new UserEntity()).getName());</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>map()与flatMap():看源码我们就可以知道，两者没有什么区别，唯一的区别就是两者的入参不一样，那又如何使用呢？<br>总的来说，这里的map与Stream中的map还是十分类似的，都是链路思维。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">//map-u.getName()返回的是String</span><br><span class="line">Optional&lt;UserEntity&gt; userOptional = queryUserEntityByName(&quot;edison&quot;);</span><br><span class="line">System.out.println(userOptional.map(u -&gt; u.getName()).get());</span><br><span class="line"></span><br><span class="line">public class UserEntity &#123;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    public String getName()&#123;</span><br><span class="line">        return this.name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//而flatMap的u.getName()返回的是Optional</span><br><span class="line">Optional&lt;UserEntity&gt; userOptional = queryUserEntityByName(&quot;edison&quot;);</span><br><span class="line">System.out.println(userOptional.flatMap(u -&gt; u.getName()).get());</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class UserEntity &#123;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    public Optional getName()&#123;</span><br><span class="line">        return Optional.ofNullable(this.name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java8/" rel="tag"># java8</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/29/tomcat/深入理解Tomcat架构（二）/" rel="next" title="深入理解Tomcat架构（二）">
+                <i class="fa fa-chevron-left"></i> 深入理解Tomcat架构（二）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/03/miniprogram/小程序通过userInfo信息解析unionId为null问题/" rel="prev" title="小程序通过userInfo信息解析unionId为null问题">
+                小程序通过userInfo信息解析unionId为null问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<div id="gitalk-container"></div>
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="/js/src/md5.min.js"></script>
+	<script type="text/javascript">
+		var gitalk = new Gitalk({
+			clientID: '83135870a07a6d067622',
+			clientSecret: 'eaefd8f7b31afd0d58b8439ea9d1f10ced93278b',
+			id: md5(location.pathname),
+			repo: 'duanshaojie.github.io',
+			owner: 'duanshaojie',
+			admin: ['duanshaojie']
+		})
+		gitalk.render('gitalk-container')
+	</script>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="四" />
+          <p class="site-author-name" itemprop="name">四</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://github.com/duanshaojie" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/duanshaojie" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:edison_dsj@163.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简述"><span class="nav-number">1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Optional的常用方法"><span class="nav-number">2.</span> <span class="nav-text">Optional的常用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Optional的使用"><span class="nav-number">3.</span> <span class="nav-text">Optional的使用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">四</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
