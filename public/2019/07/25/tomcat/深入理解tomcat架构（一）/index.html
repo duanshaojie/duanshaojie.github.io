@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="tomcat," />
+
+
+
+  <meta name="baidu-site-verification" content="8fkL3heHS5" />
+
+
+
+  <meta name="google-site-verification" content="DH7BEqCmsWNnQiFZhrKFXBz67e1oyUeIMfllrsYtukU" />
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+<meta name="description" content="在工作中，我虽然经常使用Tomcat部署项目，却没有深入理解它的架构原理，这篇文章算是记录下自己学习的成果。同时也希望你读完这篇文章能够对tomcat的架构原理能有一定的了解~~ :-)">
+<meta name="keywords" content="tomcat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解Tomcat架构（一）">
+<meta property="og:url" content="http://blog.duanshaojie.cn/2019/07/25/tomcat/深入理解tomcat架构（一）/index.html">
+<meta property="og:site_name" content="人生有多少个七年">
+<meta property="og:description" content="在工作中，我虽然经常使用Tomcat部署项目，却没有深入理解它的架构原理，这篇文章算是记录下自己学习的成果。同时也希望你读完这篇文章能够对tomcat的架构原理能有一定的了解~~ :-)">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-29T12:13:49.327Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入理解Tomcat架构（一）">
+<meta name="twitter:description" content="在工作中，我虽然经常使用Tomcat部署项目，却没有深入理解它的架构原理，这篇文章算是记录下自己学习的成果。同时也希望你读完这篇文章能够对tomcat的架构原理能有一定的了解~~ :-)">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.duanshaojie.cn/2019/07/25/tomcat/深入理解tomcat架构（一）/"/>
+
+
+
+
+
+  <title>深入理解Tomcat架构（一） | 人生有多少个七年</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+      <div class="site-meta-headline">
+        <a>
+          <img class="custom-logo-image" src="https://avatars2.githubusercontent.com/u/22759610?s=400&v=4"
+               alt="人生有多少个七年"/>
+        </a>
+      </div>
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">人生有多少个七年</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">桃之夭夭，灼灼其华</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-guestbook">
+          <a href="/guestbook" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            留言
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.duanshaojie.cn/2019/07/25/tomcat/深入理解tomcat架构（一）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="四">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生有多少个七年">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">深入理解Tomcat架构（一）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-25T00:05:49+08:00">
+                2019-07-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/中间件/" itemprop="url" rel="index">
+                    <span itemprop="name">中间件</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>   在工作中，我虽然经常使用Tomcat部署项目，却没有深入理解它的架构原理，这篇文章算是记录下自己学习的成果。<br>同时也希望你读完这篇文章能够对tomcat的架构原理能有一定的了解~~ :-)<br><a id="more"></a></p>
+<h2 id="为什么要学习tomcat？"><a href="#为什么要学习tomcat？" class="headerlink" title="为什么要学习tomcat？"></a>为什么要学习tomcat？</h2><p>   我们都知道，当你用浏览器请求一个链接的时候，简单的过程就是DNS解析-TCP连接-HTTP请求-获取响应。而这个过程中的HTTP<br>是如何调用你所编写的Controller的呢？其实tomcat就相当于一个容器，所有的Http请求都与Tomcat连接，并把请求交给tomcat，<br>由tomcat去解析，交给相应的Controller</p>
+<h2 id="什么是Servlet？"><a href="#什么是Servlet？" class="headerlink" title="什么是Servlet？"></a>什么是Servlet？</h2><p>   为什么这里要先介绍Servlet呢，tomcat就是基于Servlet实现的一个Servlet容器。而一个最简单的Servlet是什么样的呢？<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public class EdisonServlet extends HttpServlet &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected void doGet(HttpServletRequest req, HttpServletResponse resp)</span><br><span class="line">            throws ServletException, IOException</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(&quot;myServlet 在处理get()请求...&quot;);</span><br><span class="line">        PrintWriter out = resp.getWriter();</span><br><span class="line">        resp.setContentType(&quot;text/html;charset=utf-8&quot;);</span><br><span class="line">        out.println(&quot;&lt;strong&gt;My get servlet!&lt;/strong&gt;&lt;br&gt;&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected void doPost(HttpServletRequest req, HttpServletResponse resp)</span><br><span class="line">            throws ServletException, IOException &#123;</span><br><span class="line">        System.out.println(&quot;myServlet 在处理post()请求...&quot;);</span><br><span class="line">        PrintWriter out = resp.getWriter();</span><br><span class="line">        resp.setContentType(&quot;text/html;charset=utf-8&quot;);</span><br><span class="line">        out.println(&quot;&lt;strong&gt;My post servlet!&lt;/strong&gt;&lt;br&gt;&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>其实只需要继承HttpServlet，重写相应的doGet和doPost方法就行，这个地方其实可以全手写一个Servlet，不用<br>到HttpServlet，有时间可以试试。</p>
+<h2 id="Tomcat的架构"><a href="#Tomcat的架构" class="headerlink" title="Tomcat的架构"></a>Tomcat的架构</h2><p>   其实从Tomcat的conf目录下server.xml可以看出来，Tomcat相当于一个Server，而一个Server中有多个service,而一个service中<br>主要包含多个connector和一个container组件，后面会解释server.xml内的各个节点含义。</p>
+<ul>
+<li><p>Connector连接器<br>连接器的作用实际上就是替container容器接受所有请求（例如HTTP，AJP等），相当于一个中转吧，将请求转为标准的ServletRequest</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">监听网络端口</span><br><span class="line">接受读取网络请求</span><br><span class="line">生成容器能够识别的，通用的ServletRequest</span><br><span class="line">调用容器获得ServletResponse，转为tomcat Response对象</span><br><span class="line">返回给浏览器</span><br></pre></td></tr></table></figure>
+<p>而完成这些过程的主要组件为：Endpoint,processor和Adapter.<br>Endpoint和processor又抽象成为一个ProtocolHandler</p>
+<ul>
+<li><p>Endpoint<br>Endpoint主要用来进行通信。（实现TCP/IP）</p>
+</li>
+<li><p>processor<br>processor主要用来处理请求，从Endpoint读取字节流转换为Tomcat能够识别的Request或者Response对象</p>
+</li>
+<li><p>Adapter<br>转换Tomcat的Request和Response对象转为ServletRequest和ServletResponse</p>
+</li>
+</ul>
+</li>
+<li><p>Container容器  </p>
+<ul>
+<li><p>tomcat内有四种父子关系的容器,可以通过server.xml加深理解 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">|_Engine  </span><br><span class="line">   |__Host(代表一个虚拟主机)  </span><br><span class="line">      |__Context(表示一个web应用程序)     </span><br><span class="line">         |__Wrapper(代表一个servlet)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>那么一个请求是如何定位到一个Servlet的呢？<br>当一个请求来临的时候，Mapper组件解析了URL的域名和路径，再根据自己保存的wrapper映射路径，定位到一个Servlet</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="Tomcat中的server-xml"><a href="#Tomcat中的server-xml" class="headerlink" title="Tomcat中的server.xml"></a>Tomcat中的server.xml</h2><p>   这里是网上看到，借用记录下<br>   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">1、Server提供一个接口，由1至多个Service组成，让其它程序可以访问到这个Service集合，同时维护各个Service的生命周期，包括如何初始化，如何结束服务，如何找到别人请求的服务。</span><br><span class="line"></span><br><span class="line">2、Service又由1-n个Connector及单个Container组成,只是在Container和Connector外多包了一层，提供各种服务</span><br><span class="line"></span><br><span class="line">3、Connector组件是可选择替换的，负责接收浏览器发过来的TCP连接请求，创建Request/Response,分配线程，将创建的对象传递给Container来处理请求</span><br><span class="line"></span><br><span class="line">4、Container是容器的父接口，由四个容器组成，分别是Engine，Host，Context，Wrapper。其中Engine包含Host，Host包含Context，Content包含Wrapper，一个Servlet class对应一个Wrapper</span><br><span class="line"></span><br><span class="line">5、Engine容器是作为顶级Container组件来设计的，由Host组成,其作用相当于一个Container的门面。有了Engine，请求的处理过程变为：浏览器发出请求，Connector接受请求，将请求交由Container（这里是Engine）处理，Container（Engine来担当）查找请求对应的Host并将请求传递给它，Host拿到请求后查找相应的应用上下文环境，准备 servlet环境并调用service方法。</span><br><span class="line"></span><br><span class="line">6、Host容器是Engine的子容器，一个Host在Engine中代表一个虚拟主机，这个主机可以运行多个应用，他负责安装和展开这些应用，并且标识这个应用，以便能够区分他们。它的子容器通常是Context，他除了关联子容器外，还保存一个主机应有的信息。Host不是必需的，但是要运行 war程序，就必须要使用Host，因为在war中必有web.xml文件，这个文件解析就需要Host，如果有多个Host就需要定义一个top容器 Engine，而Engine没有父容器，一个Engine就代表一个完整的Servlet引擎</span><br><span class="line"></span><br><span class="line">7、Context代表Servlet的Context，它具备Servlet运行的基本环境，理论上只要有Context就能运行Servlet，简单的Tomcat可以没有Engine和Host。其最重要的功能就是管理Servlet实例，Servlet实例在Context中是以Wrapper 出现的。</span><br><span class="line"></span><br><span class="line">8、Wrapper代表一个Servlet，它负责管理Servlet，包括装载，初始化，执行以及资源回收。它是最底层的容器。</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tomcat/" rel="tag"># tomcat</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/22/关于Aspect和Annotation的使用/" rel="next" title="关于Aspect和Annotation的使用">
+                <i class="fa fa-chevron-left"></i> 关于Aspect和Annotation的使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/25/gradle/了解gradle的简单使用/" rel="prev" title="了解gradle的简单使用">
+                了解gradle的简单使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<div id="gitalk-container"></div>
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="/js/src/md5.min.js"></script>
+	<script type="text/javascript">
+		var gitalk = new Gitalk({
+			clientID: '83135870a07a6d067622',
+			clientSecret: 'eaefd8f7b31afd0d58b8439ea9d1f10ced93278b',
+			id: md5(location.pathname),
+			repo: 'duanshaojie.github.io',
+			owner: 'duanshaojie',
+			admin: ['duanshaojie']
+		})
+		gitalk.render('gitalk-container')
+	</script>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="四" />
+          <p class="site-author-name" itemprop="name">四</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://github.com/duanshaojie" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/duanshaojie" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:edison_dsj@163.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要学习tomcat？"><span class="nav-number">1.</span> <span class="nav-text">为什么要学习tomcat？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是Servlet？"><span class="nav-number">2.</span> <span class="nav-text">什么是Servlet？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tomcat的架构"><span class="nav-number">3.</span> <span class="nav-text">Tomcat的架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tomcat中的server-xml"><span class="nav-number">4.</span> <span class="nav-text">Tomcat中的server.xml</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">四</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
