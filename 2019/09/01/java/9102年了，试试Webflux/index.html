@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="springboot," />
+
+
+
+  <meta name="baidu-site-verification" content="8fkL3heHS5" />
+
+
+
+  <meta name="google-site-verification" content="DH7BEqCmsWNnQiFZhrKFXBz67e1oyUeIMfllrsYtukU" />
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+<meta name="description" content="简述最近新建了几个项目，但是发现搭来搭去感觉都可以使用项目模板。在小伙伴的推荐下，打算尝试下WebFlux，人总是要尝试点新东西的嘛！这里简单记录下，好记性不如写篇博客~">
+<meta name="keywords" content="springboot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="9102年了，试试Webflux?">
+<meta property="og:url" content="http://blog.duanshaojie.cn/2019/09/01/java/9102年了，试试Webflux/index.html">
+<meta property="og:site_name" content="人生有多少个七年">
+<meta property="og:description" content="简述最近新建了几个项目，但是发现搭来搭去感觉都可以使用项目模板。在小伙伴的推荐下，打算尝试下WebFlux，人总是要尝试点新东西的嘛！这里简单记录下，好记性不如写篇博客~">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-01T05:28:28.517Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="9102年了，试试Webflux?">
+<meta name="twitter:description" content="简述最近新建了几个项目，但是发现搭来搭去感觉都可以使用项目模板。在小伙伴的推荐下，打算尝试下WebFlux，人总是要尝试点新东西的嘛！这里简单记录下，好记性不如写篇博客~">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.duanshaojie.cn/2019/09/01/java/9102年了，试试Webflux/"/>
+
+
+
+
+
+  <title>9102年了，试试Webflux? | 人生有多少个七年</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+      <div class="site-meta-headline">
+        <a>
+          <img class="custom-logo-image" src="https://avatars2.githubusercontent.com/u/22759610?s=400&v=4"
+               alt="人生有多少个七年"/>
+        </a>
+      </div>
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">人生有多少个七年</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">桃之夭夭，灼灼其华</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-guestbook">
+          <a href="/guestbook" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            留言
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.duanshaojie.cn/2019/09/01/java/9102年了，试试Webflux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="四">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生有多少个七年">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">9102年了，试试Webflux?</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-01T13:21:54+08:00">
+                2019-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>最近新建了几个项目，但是发现搭来搭去感觉都可以使用项目模板。在小伙伴的推荐下，打算尝试下WebFlux，<br>人总是要尝试点新东西的嘛！这里简单记录下，好记性不如写篇博客~</p>
+<a id="more"></a>
+<h2 id="什么是WebFlux？为啥用它"><a href="#什么是WebFlux？为啥用它" class="headerlink" title="什么是WebFlux？为啥用它"></a>什么是WebFlux？为啥用它</h2><ul>
+<li><p>所谓webflux的就是Spring boot 2.0+以来新引入的基于Reactive Streams的框架。那什么是Reactive Streams呢？<br>字面意思就是反应流，也就是基于事件而反应的管道数据（类似于Java8中的stream，数据在一条线上不断的被修改，最后返回结果）</p>
+</li>
+<li><p>我们这次选择用它，还有一个原因就是它是一种异步的数据流处理。其实我们在进行web开发时，会使用到的Tomcat容器，它实际是基于<br>Servlet运行的，而Servlet在3.0以前的请求是线程阻塞的，就是你的请求必须在获得所有的数据之后返回，而webflux是基于Netty容器</p>
+</li>
+</ul>
+<h2 id="项目结构有啥区别？"><a href="#项目结构有啥区别？" class="headerlink" title="项目结构有啥区别？"></a>项目结构有啥区别？</h2><ul>
+<li><p>项目大家可以在spring.io自动生成哈</p>
+</li>
+<li><p>我们以gradle为例，引入webflux包,这里不能引入spring-boot-strater-web包了,我们在原来的Web开发中使用的是javax.servlet.http<br>包下HttpServletRequest,和HttpServletResponse。而Webflux中使用的是org.springframework.http.server.reactive包下面的<br>ServerHttpResponse和ServerHttpRequest，当你重复引入的时候，ServerHttpResponse和ServerHttpRequest就不起作用了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation &apos;org.springframework.boot:spring-boot-starter-webflux&apos;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>代码编写其实有两种方式，一种就是最为常见的@Controller,@Component层的编写，我下面将要写的就是Router,handler型的编写</p>
+</li>
+</ul>
+<h2 id="一个简单的上手Router-仅记录代码"><a href="#一个简单的上手Router-仅记录代码" class="headerlink" title="一个简单的上手Router-仅记录代码"></a>一个简单的上手Router-仅记录代码</h2><ul>
+<li><p>router-相当于controller</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">public class EdisonRouter &#123;</span><br><span class="line"></span><br><span class="line">    @Bean</span><br><span class="line">    public RouterFunction&lt;ServerResponse&gt; hello(EdisonHandler edisonHandler) &#123;</span><br><span class="line">        return RouterFunctions.route(RequestPredicates.GET(&quot;/test/v1/hello&quot;)</span><br><span class="line">        .and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), edisonHandler::helloCity);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>handler-业务层：这里需要注意的是表示0个或一个返回结果的Mono,和返回多条结果的Flux,具体方法可以看看源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class EdisonHandler &#123;</span><br><span class="line"></span><br><span class="line">    public Mono&lt;ServerResponse&gt; helloCity(ServerRequest request) &#123;</span><br><span class="line">        return ServerResponse.ok().body(sayHelloCity(request), String.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private Mono&lt;String&gt; sayHelloCity(ServerRequest request) &#123;</span><br><span class="line">        String name = request.queryParam(&quot;name&quot;).orElseGet(() -&gt; &#123;</span><br><span class="line">            throw new GlobalException(HttpStatus.INTERNAL_SERVER_ERROR, &quot;name不能为空&quot;);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        return Mono.just(name + &quot;：hello ！&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>webflux filter</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">@Order(1)</span><br><span class="line">public class CheckLoginFilter implements WebFilter &#123;</span><br><span class="line"></span><br><span class="line">    private static Set&lt;String&gt; unCheckUrl = new HashSet&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    static &#123;</span><br><span class="line">        unCheckUrl.add(SmsRouter.SEND_VERIFY_CODE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    private Oauth2Manager oauth2Manager;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Mono&lt;Void&gt; filter(ServerWebExchange exchange, WebFilterChain chain) &#123;</span><br><span class="line">        ServerHttpRequest request = exchange.getRequest();</span><br><span class="line">        String token = request.getHeaders().getFirst(&quot;token&quot;);</span><br><span class="line"></span><br><span class="line">        //如果包含则跳过</span><br><span class="line">        if (containUnCheckUrl(request.getPath().toString())) &#123;</span><br><span class="line">            return chain.filter(exchange);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (null == token) &#123;</span><br><span class="line">            throw new GlobalException(HttpStatus.UNAUTHORIZED, &quot;token为空&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (expiredToken(token)) &#123;</span><br><span class="line">            throw new GlobalException(HttpStatus.UNAUTHORIZED, &quot;token已过期&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return chain.filter(exchange);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="碰到的问题"><a href="#碰到的问题" class="headerlink" title="碰到的问题"></a>碰到的问题</h2><p>项目启动报<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&quot;Error creating bean with name &apos;dataSource&apos; defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Hikari.class]&quot;</span><br><span class="line"></span><br><span class="line">Description:</span><br><span class="line"></span><br><span class="line">Failed to configure a DataSource: &apos;url&apos; attribute is not specified and no embedded datasource could be configured.</span><br><span class="line"></span><br><span class="line">Reason: Failed to determine a suitable driver class</span><br><span class="line"></span><br><span class="line">//启动增加跳过源</span><br><span class="line">@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)</span><br></pre></td></tr></table></figure></p>
+<p>图片上传接口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@PostMapping(&quot;/file/v1/save&quot;)</span><br><span class="line">    @ResponseBody</span><br><span class="line">    public BaseResponse&lt;String&gt; save(Xxx xxx,</span><br><span class="line">                                    @RequestPart(&quot;file&quot;) FilePart imageFile,</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>图片下载接口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@GetMapping(&quot;/file/v1/&#123;fileName&#125;&quot;)</span><br><span class="line">public Mono&lt;Void&gt; fileLoad(@PathVariable String fileName, ServerHttpResponse response) &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        //这里省略了获取文件的详细过程</span><br><span class="line">        byte[] bytes = queryFileByte(fileName);</span><br><span class="line">        DataBufferFactory dataBufferFactory = new DefaultDataBufferFactory();</span><br><span class="line">        DataBuffer dataBuffer = dataBufferFactory.wrap(bytes);</span><br><span class="line">        return zeroCopyResponse.writeWith(Flux.just(dataBuffer));</span><br><span class="line">    &#125; catch(Exception e) &#123;</span><br><span class="line">        logger.error(&quot;========== FileController fileLoad error=&#123;&#125; ==========&quot;, e);</span><br><span class="line">    &#125;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>或者使用webflux的函数式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">//router:</span><br><span class="line">@Configuration</span><br><span class="line">public class QRcodeRouter &#123;</span><br><span class="line"></span><br><span class="line">    @Bean</span><br><span class="line">    public RouterFunction&lt;ServerResponse&gt; createQrcode(QrcodeHandler qrcodeHandler)&#123;</span><br><span class="line">        return RouterFunctions.route(RequestPredicates.GET(&quot;/qrcode/v1/create&quot;), qrcodeHandler::create);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//handler:</span><br><span class="line">public Mono&lt;ServerResponse&gt; create(ServerRequest request) &#123;</span><br><span class="line">    String content = request.queryParam(&quot;content&quot;).orElseGet(() -&gt; &#123;</span><br><span class="line">        throw new GlobalException(&quot;生成二维码参数为空&quot;);</span><br><span class="line">    &#125;);</span><br><span class="line">    ByteArrayOutputStream bytes = new ByteArrayOutputStream();</span><br><span class="line">    QRCodeUtil.createCodeToOutputStream(SCHEMA + content, bytes);</span><br><span class="line"></span><br><span class="line">    DataBufferFactory dataBufferFactory = new DefaultDataBufferFactory();</span><br><span class="line">    DataBuffer dataBuffer = dataBufferFactory.wrap(bytes.toByteArray());</span><br><span class="line"></span><br><span class="line">   return ServerResponse.ok()</span><br><span class="line">            .body((p, a) -&gt; &#123;</span><br><span class="line">                ZeroCopyHttpOutputMessage zeroCopyResponse = (ZeroCopyHttpOutputMessage) p;</span><br><span class="line">                return zeroCopyResponse.writeWith(Flux.just(dataBuffer));</span><br><span class="line">            &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/springboot/" rel="tag"># springboot</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/08/NIO/JAVA NIO简单入门/" rel="next" title="JAVA NIO简单入门">
+                <i class="fa fa-chevron-left"></i> JAVA NIO简单入门
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/20/spring/SpringBoot的的自定义自动配置/" rel="prev" title="SpringBoot的的自定义自动配置">
+                SpringBoot的的自定义自动配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<div id="gitalk-container"></div>
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="/js/src/md5.min.js"></script>
+	<script type="text/javascript">
+		var gitalk = new Gitalk({
+			clientID: '83135870a07a6d067622',
+			clientSecret: 'eaefd8f7b31afd0d58b8439ea9d1f10ced93278b',
+			id: md5(location.pathname),
+			repo: 'duanshaojie.github.io',
+			owner: 'duanshaojie',
+			admin: ['duanshaojie']
+		})
+		gitalk.render('gitalk-container')
+	</script>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="四" />
+          <p class="site-author-name" itemprop="name">四</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://github.com/duanshaojie" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/duanshaojie" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:edison_dsj@163.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简述"><span class="nav-number">1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是WebFlux？为啥用它"><span class="nav-number">2.</span> <span class="nav-text">什么是WebFlux？为啥用它</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目结构有啥区别？"><span class="nav-number">3.</span> <span class="nav-text">项目结构有啥区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个简单的上手Router-仅记录代码"><span class="nav-number">4.</span> <span class="nav-text">一个简单的上手Router-仅记录代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#碰到的问题"><span class="nav-number">5.</span> <span class="nav-text">碰到的问题</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">四</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="定时任务," />
+
+
+
+  <meta name="baidu-site-verification" content="8fkL3heHS5" />
+
+
+
+  <meta name="google-site-verification" content="DH7BEqCmsWNnQiFZhrKFXBz67e1oyUeIMfllrsYtukU" />
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+<meta name="description" content="schedule:    最近在工作中碰到需要使用定时任务的需求，所以在此记录下，仅贴出简单demo">
+<meta name="keywords" content="定时任务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记录下Java定时任务-Schedule入门使用">
+<meta property="og:url" content="http://blog.duanshaojie.cn/2018/10/31/Schedul/index.html">
+<meta property="og:site_name" content="人生有多少个七年">
+<meta property="og:description" content="schedule:    最近在工作中碰到需要使用定时任务的需求，所以在此记录下，仅贴出简单demo">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://images.cnblogs.com/cnblogs_com/jinspire/201202/201202101400252596.png">
+<meta property="og:updated_time" content="2018-04-12T08:30:17.170Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="记录下Java定时任务-Schedule入门使用">
+<meta name="twitter:description" content="schedule:    最近在工作中碰到需要使用定时任务的需求，所以在此记录下，仅贴出简单demo">
+<meta name="twitter:image" content="http://images.cnblogs.com/cnblogs_com/jinspire/201202/201202101400252596.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.duanshaojie.cn/2018/10/31/Schedul/"/>
+
+
+
+
+
+  <title>记录下Java定时任务-Schedule入门使用 | 人生有多少个七年</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+      <div class="site-meta-headline">
+        <a>
+          <img class="custom-logo-image" src="https://avatars2.githubusercontent.com/u/22759610?s=400&v=4"
+               alt="人生有多少个七年"/>
+        </a>
+      </div>
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">人生有多少个七年</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">桃之夭夭，灼灼其华</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-guestbook">
+          <a href="/guestbook" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            留言
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.duanshaojie.cn/2018/10/31/Schedul/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="四">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生有多少个七年">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">记录下Java定时任务-Schedule入门使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-31T15:34:26+08:00">
+                2018-10-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>schedule:<br>    最近在工作中碰到需要使用定时任务的需求，所以在此记录下，仅贴出简单demo</p>
+<a id="more"></a>
+<h3 id="java-util-Timerd-定时任务"><a href="#java-util-Timerd-定时任务" class="headerlink" title="java.util.Timerd 定时任务"></a>java.util.Timerd 定时任务</h3><hr>
+<p>Timer是一个定时调度类,Timer是调度控制器，而TimerTask是可调度的任务，任务的执行方式有两种：（具体不会细说，直接上代码）</p>
+<ul>
+<li><h5 id="固定延迟：timer-schedule-task-delay-—task为任务；delay延迟时间（毫秒）"><a href="#固定延迟：timer-schedule-task-delay-—task为任务；delay延迟时间（毫秒）" class="headerlink" title="固定延迟：timer.schedule(task, delay)—task为任务；delay延迟时间（毫秒）"></a>固定延迟：timer.schedule(task, delay)—task为任务；delay延迟时间（毫秒）</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class TaskTest &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Timer timer = new Timer();</span><br><span class="line">		System.out.println(new Date());</span><br><span class="line">		timer.schedule(new TimerTask() &#123;</span><br><span class="line">			</span><br><span class="line">			@Override</span><br><span class="line">			public void run() &#123;</span><br><span class="line">				System.out.println(new Date()+&quot;,延迟任务,2秒后执行,只执行一次&quot;);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;, 2000);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Wed Aug 23 16:05:04 CST 2017</span><br><span class="line">Wed Aug 23 16:05:06 CST 2017,延迟任务,2秒后执行,只执行一次</span><br></pre></td></tr></table></figure>
+</li>
+<li><h5 id="固定速率："><a href="#固定速率：" class="headerlink" title="固定速率："></a>固定速率：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class TaskTest &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Timer timer = new Timer();</span><br><span class="line">		System.out.println(new Date());</span><br><span class="line">		timer.schedule(new TimerTask() &#123;</span><br><span class="line">			</span><br><span class="line">			@Override</span><br><span class="line">			public void run() &#123;</span><br><span class="line">				System.out.println(new Date()+&quot;,延迟任务,2秒后开始任务(每秒1次)&quot;);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;, 2000,1000);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Wed Aug 23 16:08:52 CST 2017</span><br><span class="line">Wed Aug 23 16:08:54 CST 2017,延迟任务,2秒后开始任务(每秒1次)</span><br><span class="line">Wed Aug 23 16:08:55 CST 2017,延迟任务,2秒后开始任务(每秒1次)</span><br><span class="line">Wed Aug 23 16:08:56 CST 2017,延迟任务,2秒后开始任务(每秒1次)</span><br></pre></td></tr></table></figure>
+<p>从以上的例子，顺便从网上偷了个图片如下，如有侵权，联系删除</p>
+<p><img src="http://images.cnblogs.com/cnblogs_com/jinspire/201202/201202101400252596.png" alt="Timer"></p>
+<p>Timer的多任务是有一定缺点的，这里不具体解释，仅做入门</p>
+</li>
+</ul>
+<h3 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h3><hr>
+<p>因为任务调度是一个单独的服务，所以这里使用的是springboot，springboot的使用请异步</p>
+<ul>
+<li><h5 id="先创建一个maven项目"><a href="#先创建一个maven项目" class="headerlink" title="先创建一个maven项目"></a>先创建一个maven项目</h5></li>
+<li><h5 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h5><p>src/main/java</p>
+<p>​    cn.duanshaojie.app</p>
+<p>​        –Application.java</p>
+<p>​    cn.duanshaojie.config</p>
+<p>​        –QuartzConfig.java</p>
+<p>​    cn.duanshaojie.task</p>
+<p>​        –LogTask.java</p>
+<p>src/main/resources</p>
+<p>​    –job</p>
+<p>​        –schedul.xml</p>
+</li>
+<li><h5 id="贴上的我pom文件"><a href="#贴上的我pom文件" class="headerlink" title="贴上的我pom文件"></a>贴上的我pom文件</h5><p><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"></project></p>
+  <modelversion>4.0.0</modelversion>
+
+<p>  <groupid>cn.duanshaojie</groupid><br>  <artifactid>schedule</artifactid><br>  <version>0.0.1-SNAPSHOT</version></p>
+  <packaging>jar</packaging>
+
+<p>  <name>schedule</name></p>
+  <url><a href="http://maven.apache.org" target="_blank" rel="noopener">http://maven.apache.org</a></url>
+
+  <parent><br>      <groupid>org.springframework.boot</groupid><br>      <artifactid>spring-boot-starter-parent</artifactid><br>      <version>1.4.3.RELEASE</version><br>  </parent>
+
+  <properties><br>    &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;<br>  </properties>
+
+<p>  <dependencies></dependencies></p>
+<pre><code>&lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+  &lt;/dependency&gt;
+  &lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-redis&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-aop&lt;/artifactId&gt;
+&lt;/dependency&gt;
+    &lt;dependency&gt;
+    &lt;groupId&gt;org.quartz-scheduler&lt;/groupId&gt;
+    &lt;artifactId&gt;quartz&lt;/artifactId&gt;
+    &lt;version&gt;2.2.3&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;junit&lt;/groupId&gt;
+  &lt;artifactId&gt;junit&lt;/artifactId&gt;
+  &lt;version&gt;3.8.1&lt;/version&gt;
+  &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;
+</code></pre><p>  <br></p>
+<h3 id="具体操作"><a href="#具体操作" class="headerlink" title="具体操作"></a>具体操作</h3></li>
+</ul>
+<hr>
+<ul>
+<li><h5 id="Application-java"><a href="#Application-java" class="headerlink" title="Application.java"></a>Application.java</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@SpringBootApplication</span><br><span class="line">@ComponentScan(value = &quot;cn.duanshaojie&quot;)</span><br><span class="line">public class Application &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">        SpringApplication.run(Application.class, args);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+<li><h5 id="QuartzConfig-java"><a href="#QuartzConfig-java" class="headerlink" title="QuartzConfig.java"></a>QuartzConfig.java</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">@ImportResource(locations = &#123; &quot;classpath:job/schedul.xml&quot; &#125;)</span><br><span class="line">public class QuartzConfig &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+<li><h5 id="LogTask-java"><a href="#LogTask-java" class="headerlink" title="LogTask.java"></a>LogTask.java</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Component(&quot;logTask&quot;)</span><br><span class="line">public class LogTask &#123;</span><br><span class="line">	private static final Logger logger = LoggerFactory.getLogger(LogTask.class);</span><br><span class="line">	</span><br><span class="line">	public void executeTask()&#123;</span><br><span class="line">		Thread curren = Thread.currentThread();</span><br><span class="line">		System.out.println(&quot;定时任务:&quot;+curren.getId());</span><br><span class="line">		logger.info(&quot;定时任务2:&quot;+curren.getId()+&quot;,name&quot;+curren.getName());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+<li><h5 id="Schedul-xml"><a href="#Schedul-xml" class="headerlink" title="Schedul.xml"></a>Schedul.xml</h5></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</span><br><span class="line">	xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">	xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd&quot;&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;bean id=&quot;logDetail&quot;</span><br><span class="line">		class=&quot;org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean&quot;&gt;</span><br><span class="line">		&lt;!--false表示等上一个任务执行完后再开启新的任务 --&gt;</span><br><span class="line">		&lt;property name=&quot;concurrent&quot; value=&quot;false&quot; /&gt;</span><br><span class="line">		&lt;property name=&quot;targetObject&quot;&gt;</span><br><span class="line">			&lt;ref bean=&quot;logTask&quot; /&gt;</span><br><span class="line">		&lt;/property&gt;</span><br><span class="line">		&lt;property name=&quot;targetMethod&quot;&gt;</span><br><span class="line">			&lt;value&gt;executeTask&lt;/value&gt;</span><br><span class="line">		&lt;/property&gt;</span><br><span class="line">	&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">	&lt;!-- 调度触发器 --&gt;</span><br><span class="line">	&lt;bean id=&quot;logTrigger&quot;</span><br><span class="line">		class=&quot;org.springframework.scheduling.quartz.CronTriggerFactoryBean&quot;&gt;</span><br><span class="line">		&lt;!-- &lt;property name=&quot;name&quot; value=&quot;work_default_name&quot; /&gt; &lt;property name=&quot;group&quot; </span><br><span class="line">			value=&quot;work_default&quot; /&gt; --&gt;</span><br><span class="line">		&lt;property name=&quot;jobDetail&quot;&gt;</span><br><span class="line">			&lt;ref bean=&quot;logDetail&quot; /&gt;</span><br><span class="line">		&lt;/property&gt;</span><br><span class="line">		&lt;property name=&quot;cronExpression&quot;&gt;</span><br><span class="line">  			&lt;value&gt;0/1 * * * * ?&lt;/value&gt;</span><br><span class="line">		&lt;/property&gt;</span><br><span class="line">	&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">	&lt;!-- 调度工厂 --&gt;</span><br><span class="line"> 	&lt;bean id=&quot;schedulerTrigger&quot;</span><br><span class="line">		class=&quot;org.springframework.scheduling.quartz.SchedulerFactoryBean&quot;&gt;</span><br><span class="line">		&lt;property name=&quot;triggers&quot;&gt;</span><br><span class="line">			&lt;list&gt;</span><br><span class="line">				&lt;ref bean=&quot;logTrigger&quot; /&gt;</span><br><span class="line">			&lt;/list&gt;</span><br><span class="line">		&lt;/property&gt;</span><br><span class="line">	&lt;/bean&gt;</span><br><span class="line">&lt;/beans&gt;</span><br></pre></td></tr></table></figure>
+<p>在做完demo之后，发现还有一种更简单的schedul调度，就是注解式的</p>
+<p>只是在以上的代码中做些修改，在Application启动文件中加上注解@EnableScheduling扫描schedul方法</p>
+<p>而调度任务可以这样写</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class LogTask &#123;</span><br><span class="line">	private static final Logger logger = LoggerFactory.getLogger(LogTask.class);</span><br><span class="line">	</span><br><span class="line">	@Scheduled(cron=&quot;0/1 * * * * ?&quot;)</span><br><span class="line">	public void executeTask2()&#123;</span><br><span class="line">		Thread curren = Thread.currentThread();</span><br><span class="line">		System.out.println(&quot;定时任务:&quot;+curren.getId());</span><br><span class="line">		logger.info(&quot;定时任务1:&quot;+curren.getId()+&quot;,name&quot;+curren.getName());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="CronTrigger时间配置"><a href="#CronTrigger时间配置" class="headerlink" title="CronTrigger时间配置"></a>CronTrigger时间配置</h3><hr>
+<p>格式: [秒][分] [小时][日] [月][周] [年]</p>
+<p>0 0 12 <em> </em> ?           每天12点触发<br>0 15 10 ? <em> </em>          每天10点15分触发<br>0 15 10 <em> </em> ?          每天10点15分触发<br>0 15 10 <em> </em> ? <em>        每天10点15分触发<br>0 15 10 </em> <em> ? 2005     2005年每天10点15分触发<br>0 </em> 14 <em> </em> ?           每天下午的 2点到2点59分每分触发<br>0 0/5 14 <em> </em> ?         每天下午的 2点到2点59分(整点开始，每隔5分触发)<br>0 0/5 14,18 <em> </em> ?        每天下午的 18点到18点59分(整点开始，每隔5分触发)</p>
+<p>0 0-5 14 <em> </em> ?            每天下午的 2点到2点05分每分触发<br>0 10,44 14 ? 3 WED        3月分每周三下午的 2点10分和2点44分触发<br>0 15 10 ? <em> MON-FRI       从周一到周五每天上午的10点15分触发<br>0 15 10 15 </em> ?            每月15号上午10点15分触发<br>0 15 10 L <em> ?             每月最后一天的10点15分触发<br>0 15 10 ? </em> 6L            每月最后一周的星期五的10点15分触发<br>0 15 10 ? * 6L 2002-2005  从2002年到2005年每月最后一周的星期五的10点15分触发</p>
+<p>0 15 10 ? <em> 6#3           每月的第三周的星期五开始触发<br>0 0 12 1/5 </em> ?            每月的第一个中午开始每隔5天触发一次<br>0 11 11 11 11 ?           每年的11月11号 11点11分触发(光棍节)</p>
+<ul>
+<li><h5 id="好吧，我们来看几个例子"><a href="#好吧，我们来看几个例子" class="headerlink" title="好吧，我们来看几个例子"></a>好吧，我们来看几个例子</h5><p>0 0 12 <em> </em> ? 每天12点触发<br>0 15 10 ? <em> </em> 每天10点15分触发<br>0 15 10 <em> </em> ? 每天10点15分触发<br>0 15 10 <em> </em> ? <em> 每天10点15分触发<br>0 15 10 </em> <em> ? 2005 2005年每天10点15分触发<br>0 </em> 14 <em> </em> ? 每天下午的 2点到2点59分每分触发<br>0 0/5 14 <em> </em> ? 每天下午的 2点到2点59分(整点开始，每隔5分触发)<br>0 0/5 14,18 <em> </em> ? 每天下午的 2点到2点59分(整点开始，每隔5分触发)<br>每天下午的 18点到18点59分(整点开始，每隔5分触发)<br>0 0-5 14 <em> </em> ? 每天下午的 2点到2点05分每分触发<br>0 59 2 ? <em> FRI    每周5凌晨2点59分触发；<br>0 15 10 ? </em> MON-FRI 从周一到周五每天上午的10点15分触发<br>0 15 10 15 <em> ? 每月15号上午10点15分触发<br>0 15 10 L </em> ? 每月最后一天的10点15分触发<br>0 15 10 ? <em> 6L 每月最后一周的星期五的10点15分触发<br>0 15 10 ? </em> 6L 2002-2005 从2002年到2005年每月最后一周的星期五的10点15分触发<br>0 15 10 ? <em> 6#3 每月的第三周的星期五开始触发<br>0 0 12 1/5 </em> ? 每月的第一个中午开始每隔5天触发一次</p>
+</li>
+</ul>
+<p>好了，调度的简单使用就是上面这些了，有什么问题和意见，请发我邮箱 ：)</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/定时任务/" rel="tag"># 定时任务</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/31/properties/" rel="next" title="获取properties和spring单元测试">
+                <i class="fa fa-chevron-left"></i> 获取properties和spring单元测试
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/31/UUID/" rel="prev" title="获取唯一号之UUID">
+                获取唯一号之UUID <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<div id="gitalk-container"></div>
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="/js/src/md5.min.js"></script>
+	<script type="text/javascript">
+		var gitalk = new Gitalk({
+			clientID: '83135870a07a6d067622',
+			clientSecret: 'eaefd8f7b31afd0d58b8439ea9d1f10ced93278b',
+			id: md5(location.pathname),
+			repo: 'duanshaojie.github.io',
+			owner: 'duanshaojie',
+			admin: ['duanshaojie']
+		})
+		gitalk.render('gitalk-container')
+	</script>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="四" />
+          <p class="site-author-name" itemprop="name">四</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://github.com/duanshaojie" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/duanshaojie" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:edison_dsj@163.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#java-util-Timerd-定时任务"><span class="nav-number">1.</span> <span class="nav-text">java.util.Timerd 定时任务</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#固定延迟：timer-schedule-task-delay-—task为任务；delay延迟时间（毫秒）"><span class="nav-number">1.0.1.</span> <span class="nav-text">固定延迟：timer.schedule(task, delay)—task为任务；delay延迟时间（毫秒）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#固定速率："><span class="nav-number">1.0.2.</span> <span class="nav-text">固定速率：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#环境配置"><span class="nav-number">2.</span> <span class="nav-text">环境配置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#先创建一个maven项目"><span class="nav-number">2.0.1.</span> <span class="nav-text">先创建一个maven项目</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#目录结构"><span class="nav-number">2.0.2.</span> <span class="nav-text">目录结构</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#贴上的我pom文件"><span class="nav-number">2.0.3.</span> <span class="nav-text">贴上的我pom文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具体操作"><span class="nav-number">3.</span> <span class="nav-text">具体操作</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Application-java"><span class="nav-number">3.0.1.</span> <span class="nav-text">Application.java</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#QuartzConfig-java"><span class="nav-number">3.0.2.</span> <span class="nav-text">QuartzConfig.java</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#LogTask-java"><span class="nav-number">3.0.3.</span> <span class="nav-text">LogTask.java</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Schedul-xml"><span class="nav-number">3.0.4.</span> <span class="nav-text">Schedul.xml</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CronTrigger时间配置"><span class="nav-number">4.</span> <span class="nav-text">CronTrigger时间配置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#好吧，我们来看几个例子"><span class="nav-number">4.0.1.</span> <span class="nav-text">好吧，我们来看几个例子</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">四</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
