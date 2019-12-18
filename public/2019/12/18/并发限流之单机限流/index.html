@@ -70,7 +70,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="log4j logback," />
+  <meta name="keywords" content="限流," />
 
 
 
@@ -91,18 +91,18 @@
 
 
 
-<meta name="description" content="从log4j转logback踩的坑​    因为一个未知的bug导致的需要去查找error日志，才发现这个项目不知从何时起，就已经不在打印log了，祖传项目果然厉害，然后开始了一段排查之旅:tw-203c: :tw-203c: :tw-203c:">
-<meta name="keywords" content="log4j logback">
+<meta name="description" content="我们知道在一个高并发系统中，巨大的流量有可能会击溃你的应用，造成应用不可用。这个时候我们就需要考虑增加限流处理，根据系统处理能力安排流量，保证系统的高可用。这篇文章主要记录的是基于http接口的单应用限流。">
+<meta name="keywords" content="限流">
 <meta property="og:type" content="article">
-<meta property="og:title" content="从log4j转logback踩的坑">
-<meta property="og:url" content="http://blog.duanshaojie.cn/2018/10/31/记log4j转backlog/index.html">
+<meta property="og:title" content="并发限流之单机限流">
+<meta property="og:url" content="http://blog.duanshaojie.cn/2019/12/18/并发限流之单机限流/index.html">
 <meta property="og:site_name" content="人生有多少个七年">
-<meta property="og:description" content="从log4j转logback踩的坑​    因为一个未知的bug导致的需要去查找error日志，才发现这个项目不知从何时起，就已经不在打印log了，祖传项目果然厉害，然后开始了一段排查之旅:tw-203c: :tw-203c: :tw-203c:">
+<meta property="og:description" content="我们知道在一个高并发系统中，巨大的流量有可能会击溃你的应用，造成应用不可用。这个时候我们就需要考虑增加限流处理，根据系统处理能力安排流量，保证系统的高可用。这篇文章主要记录的是基于http接口的单应用限流。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-24T02:51:00.465Z">
+<meta property="og:updated_time" content="2019-12-05T11:36:22.019Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="从log4j转logback踩的坑">
-<meta name="twitter:description" content="从log4j转logback踩的坑​    因为一个未知的bug导致的需要去查找error日志，才发现这个项目不知从何时起，就已经不在打印log了，祖传项目果然厉害，然后开始了一段排查之旅:tw-203c: :tw-203c: :tw-203c:">
+<meta name="twitter:title" content="并发限流之单机限流">
+<meta name="twitter:description" content="我们知道在一个高并发系统中，巨大的流量有可能会击溃你的应用，造成应用不可用。这个时候我们就需要考虑增加限流处理，根据系统处理能力安排流量，保证系统的高可用。这篇文章主要记录的是基于http接口的单应用限流。">
 
 
 
@@ -131,13 +131,13 @@
 
 
 
-  <link rel="canonical" href="http://blog.duanshaojie.cn/2018/10/31/记log4j转backlog/"/>
+  <link rel="canonical" href="http://blog.duanshaojie.cn/2019/12/18/并发限流之单机限流/"/>
 
 
 
 
 
-  <title>从log4j转logback踩的坑 | 人生有多少个七年</title>
+  <title>并发限流之单机限流 | 人生有多少个七年</title>
   
 
 
@@ -297,7 +297,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.duanshaojie.cn/2018/10/31/记log4j转backlog/">
+    <link itemprop="mainEntityOfPage" href="http://blog.duanshaojie.cn/2019/12/18/并发限流之单机限流/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="四">
@@ -314,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">从log4j转logback踩的坑</h1>
+          <h1 class="post-title" itemprop="name headline">并发限流之单机限流</h1>
         
 
         <div class="post-meta">
@@ -326,8 +326,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-31T15:34:26+08:00">
-                2018-10-31
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-18T21:07:59+08:00">
+                2019-12-18
               </time>
             
 
@@ -386,43 +386,15 @@
       
 
       
-        <h1 id="从log4j转logback踩的坑"><a href="#从log4j转logback踩的坑" class="headerlink" title="从log4j转logback踩的坑"></a>从log4j转logback踩的坑</h1><p>​    因为一个未知的bug导致的需要去查找error日志，才发现这个项目不知从何时起，就已经不在打印log了，祖传项目果然厉害，然后开始了一段排查之旅:tw-203c: :tw-203c: :tw-203c:</p>
-<a id="more"></a>
-<ol>
-<li>解决无法打印日志的问题</li>
-</ol>
-<hr>
-<p>​    这个问题比较好解决，在项目启动的时候发现有jar包冲突了，导致log4j日志没法打印。 因为我使用的是IDEA，所以这里也是使用IDEA做记录。</p>
-<p>​    怎么排除冲突jar包可以看这篇文章<a href="https://blog.csdn.net/qq_27093465/article/details/69226949" title="Intellij IDEA 中如何查看maven项目中所有jar包的依赖关系图" target="_blank" rel="noopener">Intellij IDEA 中如何查看maven项目中所有jar包的依赖关系图</a></p>
-<p>​    当我兴致冲冲准备提交上线的时候，路哥和我说这怎么还在用log4j呀，其他项目都是logback了。</p>
-<ol start="2">
-<li>log4j转logback</li>
-</ol>
-<hr>
-<p>​    本来以为很简单，不就是删掉log4j.properties，加上logback.xml 几分钟搞点，测试成功~</p>
-<p>​    但貌似不对呀，启动以后不停的刷日志，如下<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DEBUG(ClientCnxn.java:758)ClientCnxn:758 - Got ping response for sessionid: 0x1018d58af04377b after 1ms</span><br><span class="line">DEBUG(ClientCnxn.java:758)ClientCnxn:758 - Got ping response for sessionid: 0x1018d58af04377b after 1ms</span><br><span class="line">DEBUG(ClientCnxn.java:758)ClientCnxn:758 - Got ping response for sessionid: 0x1018d58af04377b after 1ms</span><br><span class="line">DEBUG(ClientCnxn.java:758)ClientCnxn:758 - Got ping response for sessionid: 0x1018d58af04377b after 1ms</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DEBUG(HeartBeatTask.java:66)HeartBeatTask:66 -  [DUBBO] Send heartbeat to remote channel /10.10.10.91:20809, cause: The channel has no data-transmission exceeds a heartbeat period: 60000ms, dubbo version: 2.4.7, current host: 192.168.4.215</span><br><span class="line">DEBUG(HeartbeatHandler.java:82)HeartbeatHandler:82 -  [DUBBO] Receive heartbeat response in thread New I/O client worker #1-2, dubbo version: 2.4.7, current host: 192.168.4.215</span><br><span class="line">DEBUG(HeartBeatTask.java:66)HeartBeatTask:66 -  [DUBBO] Send heartbeat to remote channel /10.10.10.46:20883, cause: The channel has no data-transmission exceeds a heartbeat period: 60000ms, dubbo version: 2.4.7, current host: 192.168.4.215</span><br><span class="line">DEBUG(HeartbeatHandler.java:82)HeartbeatHandler:82 -  [DUBBO] Receive heartbeat response in thread New I/O client worker #1-3, dubbo version: 2.4.7, current host: 192.168.4.215</span><br></pre></td></tr></table></figure>
-<p>​    从日志上看能够看出来是dubbo和Zookeper的日志，原以为是日志级别的问题，就在logback.xml加上如下代码，将他们的日志设为error级别<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;logger name="com.alibaba.dubbo" level="OFF" /&gt;</span><br><span class="line">&lt;logger name="org.apache.zookeeper.ClientCnxn" level="OFF" /&gt;</span><br></pre></td></tr></table></figure></p>
-<p>​    当然我上面是直接关了，你们可以看需求，但是然并卵。日志还是一如既往的刷刷刷~  我真的是脑子疼，项目启动慢就算了，你还如此冥王不顾，找死~</p>
-<p>​    然后我就沉下心来，仔细排除，发现这尼玛不是我logback.xml中设置的log格式呀，你们是石头里蹦出来的吧。第一反应就是，这是log4j和slf4j同时使用了吧，难道是jar包问题？ 一顿顿操作啪啪啪，排除所有log4j jar包，重启~一如既往的刷刷刷~ 好吧，看来不是这个问题</p>
-<ol start="3">
-<li>解决zookeeper日志问题</li>
-</ol>
-<hr>
-<p>​    排查中发现<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DEBUG(ClientCnxn.java:758)ClientCnxn:758 - Got ping response for sessionid: 0x1018d58af04377b after 1ms</span><br></pre></td></tr></table></figure></p>
-<p>这条日志中的‘ClientCnxn.class’源代码里面中的log包竟然是<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import org.apache.log4j.Logger;</span><br></pre></td></tr></table></figure></p>
-<p>​    网上找到了答案，原来，zookeeper 3.3.3里的ClientCnxn的log直接用log4j，zookeeper 3.4.3里的ClientCnxn用的是slf4j。好吧，把zookeeper换成3.4.3,重启，果然这条日志不刷了</p>
-<ol start="3">
-<li>解决dubbo日志问题</li>
-</ol>
-<hr>
-<p>在启动项目的时候发现这条日志<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INFO(?:?)LoggerFactory:? - using logger: com.alibaba.dubbo.common.logger.log4j.Log4jLoggerAdapter</span><br></pre></td></tr></table></figure></p>
-<p>怎么dubbo默认启动log4j的？只能去pom中找到dubbo 排除掉log4j架包~ 你以为就完了？重启，还是刷刷刷。。。</p>
-<p>​    好吧，不行那只能看源码了，果然不看不知道，一看吓一跳<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">static &#123;</span><br><span class="line">    String logger = System.getProperty("dubbo.application.logger");</span><br><span class="line">    if ("slf4j".equals(logger)) &#123;</span><br><span class="line">        setLoggerAdapter((LoggerAdapter)(new Slf4jLoggerAdapter()));</span><br><span class="line">    &#125; else if ("jcl".equals(logger)) &#123;</span><br><span class="line">        setLoggerAdapter((LoggerAdapter)(new JclLoggerAdapter()));</span><br><span class="line">    &#125; else if ("log4j".equals(logger)) &#123;</span><br><span class="line">        setLoggerAdapter((LoggerAdapter)(new Log4jLoggerAdapter()));</span><br><span class="line">    &#125; else if ("jdk".equals(logger)) &#123;</span><br><span class="line">        setLoggerAdapter((LoggerAdapter)(new JdkLoggerAdapter()));</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            setLoggerAdapter((LoggerAdapter)(new Log4jLoggerAdapter()));</span><br><span class="line">        &#125; catch (Throwable var6) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                setLoggerAdapter((LoggerAdapter)(new Slf4jLoggerAdapter()));</span><br><span class="line">            &#125; catch (Throwable var5) &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    setLoggerAdapter((LoggerAdapter)(new JclLoggerAdapter()));</span><br><span class="line">                &#125; catch (Throwable var4) &#123;</span><br><span class="line">                    setLoggerAdapter((LoggerAdapter)(new JdkLoggerAdapter()));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>​    原来如果没有设置输出日志类型，dubbo中默认的日志是log4j，这这这，哎哟，我今天真的是脑壳疼了。网上答案是说在启动的时候设置System.getProperty(“dubbo.application.logger”)这个参数为slf4j</p>
-<p>​    好吧直接上代码<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class Slf4jConfig extends ContextLoaderListener &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void contextInitialized(ServletContextEvent event) &#123;</span><br><span class="line">        System.setProperty("dubbo.application.logger","slf4j");</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>​    web.xml<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;listener&gt;</span><br><span class="line">    &lt;listener-class&gt;com.galaxy.wap.core.Slf4jConfig&lt;/listener-class&gt;</span><br><span class="line">&lt;/listener&gt;</span><br></pre></td></tr></table></figure></p>
-<p>​    启动，完成，果然源码的重要性立马凸显了</p>
+        <p>我们知道在一个高并发系统中，巨大的流量有可能会击溃你的应用，造成应用不可用。这个时候我们就需要考虑增加限流处理，<br>根据系统处理能力安排流量，保证系统的高可用。这篇文章主要记录的是基于http接口的单应用限流。<br><a id="more"></a></p>
+<h2 id="限流分类"><a href="#限流分类" class="headerlink" title="限流分类"></a>限流分类</h2><p>限流我们主要分为两大类：假设我们的系统限制了请求为1000次每秒</p>
+<ul>
+<li>否决类：每秒钟超过1000的其他请求将得到空结果，或其他自定义结果。比如计数器法</li>
+<li>阻塞式：每秒钟超过1000次的其他请求，将会均匀的安排在后面的时间里。比如令牌桶法</li>
+</ul>
+<h2 id="单应用限流"><a href="#单应用限流" class="headerlink" title="单应用限流"></a>单应用限流</h2><h3 id="计数器法"><a href="#计数器法" class="headerlink" title="计数器法"></a>计数器法</h3><p>根据名字我们就能狗看出来，它的实现是比较简单的。也就是指在单位时间内，可以通过的请求数。如下简单实现了计数器法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    CountLimiter countLimiter = new CountLimiter();</span><br><span class="line">    for (int i = 0; i &lt; 10000; i++) &#123;</span><br><span class="line">        countLimiter.getCountLimiter(i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static class CountLimiter &#123;</span><br><span class="line"></span><br><span class="line">    private int beginCount = -1;</span><br><span class="line">    private int maxQPS = 10;</span><br><span class="line">    private static AtomicInteger atomicInteger;</span><br><span class="line"></span><br><span class="line">    public void getCountLimiter(int num)&#123;</span><br><span class="line">        if (beginCount != LocalTime.now().getSecond()) &#123;</span><br><span class="line">            beginCount = LocalTime.now().getSecond();</span><br><span class="line">            atomicInteger = new AtomicInteger(0);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (atomicInteger.incrementAndGet() &lt;= maxQPS) &#123;</span><br><span class="line">            System.out.println(String.format(&quot;time = %s, num = %s&quot;, beginCount, num));</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            System.out.println(&quot;fail &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>简单实现了下，当请求数大于maxQPS时，请求都是失败的。</p>
+<h3 id="令牌桶算法（RateLimiter）"><a href="#令牌桶算法（RateLimiter）" class="headerlink" title="令牌桶算法（RateLimiter）"></a>令牌桶算法（RateLimiter）</h3><p>除了令牌桶算法，还有一个漏桶算法，但我这都没有自己实现，而是讲了下RateLimiter。<br>RateLimiter：令牌桶会按照固定速率添加令牌，而请求进来会获取令牌开始请求，若令牌数为0时，会拒绝请求。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">private static final RateLimiter RATE_LIMITER = RateLimiter.create(10);</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    for (int i = 0; i &lt; 100; i++) &#123;</span><br><span class="line">        System.out.println(LocalTime.now().getSecond() + &quot;---&gt;&gt; num:&quot; + i + &quot;,limiter:&quot; + getMessage(i));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static double getMessage(int num)&#123;</span><br><span class="line">    return RATE_LIMITER.acquire(1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -440,7 +412,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/log4j-logback/" rel="tag"># log4j logback</a>
+            <a href="/tags/限流/" rel="tag"># 限流</a>
           
         </div>
       
@@ -453,8 +425,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/10/31/UUID/" rel="next" title="获取唯一号之UUID">
-                <i class="fa fa-chevron-left"></i> 获取唯一号之UUID
+              <a href="/2019/12/07/spring/为什么推荐构造器注入？/" rel="next" title="为什么推荐构造器注入？">
+                <i class="fa fa-chevron-left"></i> 为什么推荐构造器注入？
               </a>
             
           </div>
@@ -462,10 +434,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/11/14/Csrf防御/" rel="prev" title="Csrf防御">
-                Csrf防御 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -653,7 +621,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#从log4j转logback踩的坑"><span class="nav-number">1.</span> <span class="nav-text">从log4j转logback踩的坑</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#限流分类"><span class="nav-number">1.</span> <span class="nav-text">限流分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单应用限流"><span class="nav-number">2.</span> <span class="nav-text">单应用限流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#计数器法"><span class="nav-number">2.1.</span> <span class="nav-text">计数器法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#令牌桶算法（RateLimiter）"><span class="nav-number">2.2.</span> <span class="nav-text">令牌桶算法（RateLimiter）</span></a></li></ol></li></ol></div>
             
 
           </div>
