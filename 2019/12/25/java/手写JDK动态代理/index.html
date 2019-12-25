@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java," />
+
+
+
+  <meta name="baidu-site-verification" content="8fkL3heHS5" />
+
+
+
+  <meta name="google-site-verification" content="DH7BEqCmsWNnQiFZhrKFXBz67e1oyUeIMfllrsYtukU" />
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+<meta name="description" content="我们知道JDK的动态代理十分的强大，它能够根据一个类，在不改动类源码的情况下，使用一个代理类添加属于自己的逻辑，并重新生成一个新的类。那么它是如何实现的呢？我也不知道，所以这篇文章让我们一起学习下它的实现原理，跟着动手写一个自己的动态代理。">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手写JDK动态代理">
+<meta property="og:url" content="http://blog.duanshaojie.cn/2019/12/25/java/手写JDK动态代理/index.html">
+<meta property="og:site_name" content="人生有多少个七年">
+<meta property="og:description" content="我们知道JDK的动态代理十分的强大，它能够根据一个类，在不改动类源码的情况下，使用一个代理类添加属于自己的逻辑，并重新生成一个新的类。那么它是如何实现的呢？我也不知道，所以这篇文章让我们一起学习下它的实现原理，跟着动手写一个自己的动态代理。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-25T02:10:08.085Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="手写JDK动态代理">
+<meta name="twitter:description" content="我们知道JDK的动态代理十分的强大，它能够根据一个类，在不改动类源码的情况下，使用一个代理类添加属于自己的逻辑，并重新生成一个新的类。那么它是如何实现的呢？我也不知道，所以这篇文章让我们一起学习下它的实现原理，跟着动手写一个自己的动态代理。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.duanshaojie.cn/2019/12/25/java/手写JDK动态代理/"/>
+
+
+
+
+
+  <title>手写JDK动态代理 | 人生有多少个七年</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+      <div class="site-meta-headline">
+        <a>
+          <img class="custom-logo-image" src="https://avatars2.githubusercontent.com/u/22759610?s=400&v=4"
+               alt="人生有多少个七年"/>
+        </a>
+      </div>
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">人生有多少个七年</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">桃之夭夭，灼灼其华</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-guestbook">
+          <a href="/guestbook" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            留言
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.duanshaojie.cn/2019/12/25/java/手写JDK动态代理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="四">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生有多少个七年">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">手写JDK动态代理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-25T10:07:44+08:00">
+                2019-12-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>我们知道JDK的动态代理十分的强大，它能够根据一个类，在不改动类源码的情况下，使用一个代理类添加属于自己的逻辑，并重新生成一个新的类。那么它是如何实现的呢？我也不知道，所以这篇文章让我们一起学习下它的实现原理，跟着动手写一个自己的动态代理。</p>
+<a id="more"></a>
+<h2 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h2><p>可能大家都听说过设计模式中的代理模式，实际上静态代理的定义就是，使用一个代理类，来实现对某些类的访问权限。<br>比如这样一个场景，有一天我要把我的房子租出去,但是我不想和那么多陌生人有交集，那我们就找中介呗，如下：</p>
+<ul>
+<li><p>建一个房源抽象接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//房源</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Listings</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">getMessage</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>我的房源信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EdisonRentMessage</span> <span class="keyword">implements</span> <span class="title">Listings</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"房主：edison；月租金：3000"</span>);;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>中介为我的房源做了代理</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProxyRentMessage</span> <span class="keyword">implements</span> <span class="title">Listings</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"我是XX房屋经纪人"</span>);</span><br><span class="line">        <span class="keyword">new</span> EdisonRentMessage().getMessage();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>租客查看时，其实只能看到中介，并不知道背后房源的真实地址</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Listings listings = <span class="keyword">new</span> ProxyRentMessage();</span><br><span class="line">        listings.getMessage();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//打印</span><br><span class="line">我是XX房屋经纪人</span><br><span class="line">房主：edison；月租金：3000</span><br></pre></td></tr></table></figure>
+<h2 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h2><p>动态代理与静态代理有什么区别呢？</p>
+<ul>
+<li>静态代理在编译后已经是一个.class文件被加载到jvm了。而动态代理则是在运行过程中，动态生成并加入到JVM中的，并没有实体.class。</li>
+<li>由于代理类需要在运行时加载字节码，所以相比较静态代理，效率就没有那么高<br>但是静态代理又会有个问题，每个代理类都只对一个业务接口进行包装，如果现在这个代理兼职卖房我们怎么修改呢？<br>（并且我现在需要他每个代理接口前先上个广告，结束以后再加个结束语。)</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProxyRentMessage</span> <span class="keyword">implements</span> <span class="title">Listings</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//租房</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"我是XX房屋经纪人,欢迎您查看我们公司的房源"</span>);</span><br><span class="line">        <span class="keyword">new</span> EdisonRentMessage().getMessage();</span><br><span class="line">        System.out.println(<span class="string">"以上就是房源，若喜欢就和我联系吧。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//卖房信息</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getSellMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"我是XX房屋经纪人,欢迎您查看我们公司的房源"</span>);</span><br><span class="line">        <span class="keyword">new</span> EdisonRentMessage().getSellMessage();</span><br><span class="line">        System.out.println(<span class="string">"以上就是房源，若喜欢就和我联系吧。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那如果代理多了，以上的代码就会越来越臃肿，这个时候就可以使用动态代理，下面根据JDK的动态代理修改了代理类：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RentInvocation</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Object target;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> &lt;T extends Listings&gt; <span class="function">Object <span class="title">getInstance</span><span class="params">(T target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.target = target;</span><br><span class="line">        Class&lt;?&gt; clazz = target.getClass();</span><br><span class="line">        <span class="keyword">return</span> Proxy.newProxyInstance(clazz.getClassLoader(), clazz.getInterfaces(), <span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"我是XX房屋经纪人,欢迎您查看我们公司的房源"</span>);</span><br><span class="line">        Object result = method.invoke(target, args);</span><br><span class="line">        System.out.println(<span class="string">"以上就是房源，若喜欢就和我联系吧。"</span>);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>调用端及输出如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Listings listings = <span class="keyword">new</span> EdisonRentMessage();</span><br><span class="line">        Listings listings2 = (Listings) <span class="keyword">new</span> RentInvocation().getInstance(listings);</span><br><span class="line">        listings2.getMessage();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">我是XX房屋经纪人,欢迎您查看我们公司的房源</span><br><span class="line">房主：edison；月租金：3000</span><br><span class="line">以上就是房源，若喜欢就和我联系吧。</span><br></pre></td></tr></table></figure>
+<p>一个动态代理，首先实现InvocationHandler类并在invoke方法中进行业务操作，而一个动态代理也需要维护一个target对象。</p>
+<h2 id="手写实现JDK动态代理"><a href="#手写实现JDK动态代理" class="headerlink" title="手写实现JDK动态代理"></a>手写实现JDK动态代理</h2><ul>
+<li><p>首先在手写JDK动态代理之前，我们来缕一下他生成新对象的过程：</p>
+<ul>
+<li>获取被代理对象的引用，并且通过反射获取他所有的接口；</li>
+<li>重新生成一个类，并实现被代理类的所有接口；</li>
+<li>动态生成代码，添加需要加入的业务代码；</li>
+<li>编译生成Java的.class文件，并重新加载到JVM；</li>
+</ul>
+</li>
+<li><p>首先创建一个与InvocationHandle一样的接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyInvocationHandler</span> </span>&#123;</span><br><span class="line">    <span class="function">Object <span class="title">invoke</span><span class="params">(Object target, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编写自定义ClassLoader类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyClassLoader</span> <span class="keyword">extends</span>  <span class="title">ClassLoader</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> File classPathFile;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyClassLoader</span><span class="params">()</span></span>&#123;</span><br><span class="line">        String classpath = MyClassLoader.class.getResource(<span class="string">""</span>).getPath();</span><br><span class="line">        <span class="keyword">this</span>.classPathFile = <span class="keyword">new</span> File(classpath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> Class&lt;?&gt; findClass(String name) <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">        String classpath = MyClassLoader.class.getPackage().getName() + <span class="string">"."</span> + name;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (classPathFile.exists()) &#123;</span><br><span class="line">            File classFile = <span class="keyword">new</span> File(classPathFile, name.replaceAll(<span class="string">"\\."</span>, <span class="string">"/"</span>) + <span class="string">".class"</span>);</span><br><span class="line">            <span class="keyword">if</span> (classFile.exists()) &#123;</span><br><span class="line">                FileInputStream in = <span class="keyword">null</span>;</span><br><span class="line">                ByteArrayOutputStream out = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    in = <span class="keyword">new</span> FileInputStream(classFile);</span><br><span class="line">                    out = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">                    <span class="keyword">byte</span>[] bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">                    <span class="keyword">int</span> len;</span><br><span class="line">                    <span class="keyword">while</span> ((len = in.read(bytes)) != -<span class="number">1</span>) &#123;</span><br><span class="line">                        out.write(bytes, <span class="number">0</span>, len);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">return</span> defineClass(classpath, out.toByteArray(), <span class="number">0</span>, out.size());</span><br><span class="line">                &#125; <span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span> (<span class="keyword">null</span> != in) &#123;</span><br><span class="line">                        <span class="keyword">try</span> &#123;</span><br><span class="line">                            in.close();</span><br><span class="line">                        &#125; <span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">                            e.printStackTrace();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (<span class="keyword">null</span> != out) &#123;</span><br><span class="line">                        <span class="keyword">try</span> &#123;</span><br><span class="line">                            out.close();</span><br><span class="line">                        &#125; <span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">                            e.printStackTrace();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编写动态生成代理类的工具类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProxyCreateUtil</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 生成代理类工具</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> loader</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> interfaces    目标class的所有接口</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> invocationHandler 实例化需要生成的handler</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">newProxyInstance</span><span class="params">(MyClassLoader loader, Class&lt;?&gt;[] interfaces, InvocationHandler invocationHandler)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//动态生成源代码</span></span><br><span class="line">            String src = generateSrc(interfaces);</span><br><span class="line">            <span class="comment">//输出到磁盘</span></span><br><span class="line">            String filepath = ProxyCreateUtil.class.getResource(<span class="string">""</span>).getPath();</span><br><span class="line">            File file = <span class="keyword">new</span> File(filepath + <span class="string">"$proxy0.java"</span>);</span><br><span class="line">            FileWriter fileWriter = <span class="keyword">new</span> FileWriter(file);</span><br><span class="line">            fileWriter.write(src);</span><br><span class="line">            fileWriter.flush();</span><br><span class="line">            fileWriter.close();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//将生成的.java编译成.class文件</span></span><br><span class="line">            JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();</span><br><span class="line">            StandardJavaFileManager manager = javaCompiler.getStandardFileManager(<span class="keyword">null</span>,<span class="keyword">null</span>,<span class="keyword">null</span>);</span><br><span class="line">            Iterable iterable = manager.getJavaFileObjects(file);</span><br><span class="line">            JavaCompiler.CompilationTask task = javaCompiler.getTask(<span class="keyword">null</span>, manager, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, iterable);</span><br><span class="line">            task.call();</span><br><span class="line">            manager.close();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//将编译完成的.class放入JVM</span></span><br><span class="line">            Class proxyClass = loader.findClass(<span class="string">"$Proxy0"</span>);</span><br><span class="line">            Constructor constructor = proxyClass.getConstructor(MyInvocationHandler.class);</span><br><span class="line">            file.delete();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//返回字节码充足以后的代理对象</span></span><br><span class="line">            <span class="keyword">return</span> constructor.newInstance(invocationHandler);</span><br><span class="line">        &#125; <span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//生成源代码  &lt;-------</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String ln = <span class="string">"\r\n"</span>;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">generateSrc</span><span class="params">(Class&lt;?&gt;[] interfaces)</span> </span>&#123;</span><br><span class="line">        StringBuffer stringBuffer = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">        stringBuffer.append(<span class="string">"package com.spring.invocation.InvocationHandler;"</span> + ln);</span><br><span class="line">        <span class="comment">//静态代理时使用的接口</span></span><br><span class="line">        stringBuffer.append(<span class="string">"import com.spring.invocation._static.Listings;"</span> + ln);</span><br><span class="line">        stringBuffer.append(<span class="string">"import java.lang.reflect.*;"</span> + ln);</span><br><span class="line"></span><br><span class="line">        stringBuffer.append(<span class="string">"public class $Proxy0 implements "</span> + interfaces[<span class="number">0</span>].getName() + <span class="string">"&#123;"</span> + ln);</span><br><span class="line">            stringBuffer.append(<span class="string">"private MyInvocationHandler h;"</span> + ln);</span><br><span class="line">            stringBuffer.append(<span class="string">"public $Proxy0(MyInvocationHandler h) &#123;"</span> + ln);</span><br><span class="line">                stringBuffer.append(<span class="string">"this.h = h"</span> + ln);</span><br><span class="line">            stringBuffer.append(<span class="string">"&#125;"</span> + ln);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//所有的方法</span></span><br><span class="line">            <span class="keyword">for</span> (Method m : interfaces[<span class="number">0</span>].getMethods()) &#123;</span><br><span class="line">                Class&lt;?&gt;[] params = m.getParameterTypes();</span><br><span class="line"></span><br><span class="line">                StringBuffer paramNames = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">                StringBuffer paramValue = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">                StringBuffer paramClasses = <span class="keyword">new</span> StringBuffer();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; params.length; i++) &#123;</span><br><span class="line">                    Class clazz = params[i];</span><br><span class="line">                    String type = clazz.getName();</span><br><span class="line">                    String paramName = toLowerFirstCase(clazz.getSimpleName());</span><br><span class="line"></span><br><span class="line">                    paramNames.append(type + <span class="string">" "</span> + paramName);</span><br><span class="line">                    paramValue.append(paramName);</span><br><span class="line">                    paramClasses.append(clazz.getName() + <span class="string">".class"</span>);</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (i &gt; <span class="number">0</span> &amp;&amp; i &lt; params.length - <span class="number">1</span>) &#123;</span><br><span class="line">                        paramNames.append(<span class="string">","</span>);</span><br><span class="line">                        paramValue.append(<span class="string">","</span>);</span><br><span class="line">                        paramClasses.append(<span class="string">","</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                stringBuffer.append(<span class="string">"public "</span> + m.getReturnType().getName() + <span class="string">" "</span> + m.getName() + <span class="string">"("</span> + paramNames.toString() +<span class="string">")&#123;"</span> + ln);</span><br><span class="line">                    stringBuffer.append(<span class="string">"try&#123;"</span> + ln);</span><br><span class="line">                        stringBuffer.append(<span class="string">"Method m = "</span> + interfaces[<span class="number">0</span>].getName() + <span class="string">".class.getMethod(\""</span></span><br><span class="line">                                        + m.getName() + <span class="string">"\", new Class[]&#123;"</span> + paramClasses.toString() + <span class="string">"&#125;);"</span> + ln);</span><br><span class="line">                        stringBuffer.append((hasReturnValue(m.getReturnType()) ? <span class="string">"return "</span> : <span class="string">""</span>) + getCaseCode(<span class="string">"this.h.invoke(this,m,new Object[]&#123;"</span></span><br><span class="line">                                + paramValue + <span class="string">"&#125;)"</span>, m.getReturnType()) + <span class="string">";"</span> + ln);</span><br><span class="line">                    stringBuffer.append(<span class="string">"&#125;catch(Error _ex)&#123;&#125;"</span>);</span><br><span class="line">                    stringBuffer.append(<span class="string">"catch(Throwable e)&#123;"</span> + ln);</span><br><span class="line">                    stringBuffer.append(<span class="string">"throw new UndeclaredThrowableException(e);"</span> + ln);</span><br><span class="line">                    stringBuffer.append(<span class="string">"&#125;"</span>);</span><br><span class="line">                    stringBuffer.append(getReturnEmptyCode(m.getReturnType()));</span><br><span class="line">                stringBuffer.append(<span class="string">"&#125;"</span> + ln);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        stringBuffer.append(<span class="string">"&#125;"</span> + ln);</span><br><span class="line">        <span class="keyword">return</span> stringBuffer.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Map&lt;Class, Class&gt; mappings = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        mappings.put(<span class="keyword">int</span>.class, Integer.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">getReturnEmptyCode</span><span class="params">(Class&lt;?&gt; returnType)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mappings.containsKey(returnType)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">"return 0;"</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> (returnType == <span class="keyword">void</span>.class)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">"return null;"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">getCaseCode</span><span class="params">(String s, Class&lt;?&gt; returnType)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mappings.containsKey(returnType)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">"(("</span> + mappings.get(returnType).getName() + <span class="string">")"</span> + s + <span class="string">")."</span> + returnType.getSimpleName() + <span class="string">"value()"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> s;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">hasReturnValue</span><span class="params">(Class&lt;?&gt; returnType)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> returnType != <span class="keyword">void</span>.class;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//生成首字母小写</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">toLowerFirstCase</span><span class="params">(String simpleName)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">char</span>[] chars = simpleName.toCharArray();</span><br><span class="line">        chars[<span class="number">0</span>] += <span class="number">32</span>;</span><br><span class="line">        <span class="keyword">return</span> chars.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后参考静态代理编写测试方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">//生成动态代理类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoInvocationHandler</span> <span class="keyword">implements</span> <span class="title">MyInvocationHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Object target;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">getInstence</span><span class="params">(Object target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.target = target;</span><br><span class="line">        Class clazz = target.getClass();</span><br><span class="line">        <span class="keyword">return</span> ProxyCreateUtil.newProxyInstance(<span class="keyword">new</span> MyClassLoader(), clazz.getInterfaces(), <span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object target, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line"></span><br><span class="line">        doBefore();</span><br><span class="line">        Object result = method.invoke(<span class="keyword">this</span>.target, args);</span><br><span class="line">        doAfter();</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doAfter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"以上就是房源，若喜欢就和我联系吧。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doBefore</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"我是XX房屋经纪人,欢迎您查看我们公司的房源"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试类及返回如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Listings listings = (Listings) <span class="keyword">new</span> DemoInvocationHandler().getInstence(<span class="keyword">new</span> EdisonRentMessage());</span><br><span class="line">        listings.getMessage();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">我是XX房屋经纪人,欢迎您查看我们公司的房源</span><br><span class="line">房主：edison；月租金：3000</span><br><span class="line">以上就是房源，若喜欢就和我联系吧。</span><br></pre></td></tr></table></figure>
+<h2 id="参考书籍"><a href="#参考书籍" class="headerlink" title="参考书籍"></a>参考书籍</h2><ul>
+<li>《Spring 5 核心原理与30个类手写实战》</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/18/并发限流之单机限流/" rel="next" title="并发限流之单机限流">
+                <i class="fa fa-chevron-left"></i> 并发限流之单机限流
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<div id="gitalk-container"></div>
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="/js/src/md5.min.js"></script>
+	<script type="text/javascript">
+		var gitalk = new Gitalk({
+			clientID: '83135870a07a6d067622',
+			clientSecret: 'eaefd8f7b31afd0d58b8439ea9d1f10ced93278b',
+			id: md5(location.pathname),
+			repo: 'duanshaojie.github.io',
+			owner: 'duanshaojie',
+			admin: ['duanshaojie']
+		})
+		gitalk.render('gitalk-container')
+	</script>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="四" />
+          <p class="site-author-name" itemprop="name">四</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">28</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://github.com/duanshaojie" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/duanshaojie" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:edison_dsj@163.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#静态代理"><span class="nav-number">1.</span> <span class="nav-text">静态代理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态代理"><span class="nav-number">2.</span> <span class="nav-text">动态代理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#手写实现JDK动态代理"><span class="nav-number">3.</span> <span class="nav-text">手写实现JDK动态代理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考书籍"><span class="nav-number">4.</span> <span class="nav-text">参考书籍</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">四</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
