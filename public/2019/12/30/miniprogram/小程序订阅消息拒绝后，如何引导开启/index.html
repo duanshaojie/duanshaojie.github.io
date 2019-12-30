@@ -91,18 +91,18 @@
 
 
 
-<meta name="description" content="简述最近在开发一款小程序，因人手不足，我就来充数了~ 而我们测试一直在提醒我，今天抽时间看了下，具体描述和解决过程请戳下面">
+<meta name="description" content="最近小程序收到消息，将要在2020年1月10号下线模板消息下发功能，所有的消息订阅都需要用户手动授权同意。老实说从获取用户信息的手动授权就可以看出来，腾讯对用户隐私相关都比较严格，都需要用户手动确认（老实说，为了这种授权，改来改去好多次了），这是好事（不改能咋办）啊">
 <meta name="keywords" content="小程序">
 <meta property="og:type" content="article">
-<meta property="og:title" content="小程序通过userInfo信息解析unionId为null问题">
-<meta property="og:url" content="http://blog.duanshaojie.cn/2019/08/03/miniprogram/小程序通过userInfo信息解析unionId为null问题/index.html">
+<meta property="og:title" content="小程序订阅消息拒绝后，如何引导开启">
+<meta property="og:url" content="http://blog.duanshaojie.cn/2019/12/30/miniprogram/小程序订阅消息拒绝后，如何引导开启/index.html">
 <meta property="og:site_name" content="人生有多少个七年">
-<meta property="og:description" content="简述最近在开发一款小程序，因人手不足，我就来充数了~ 而我们测试一直在提醒我，今天抽时间看了下，具体描述和解决过程请戳下面">
+<meta property="og:description" content="最近小程序收到消息，将要在2020年1月10号下线模板消息下发功能，所有的消息订阅都需要用户手动授权同意。老实说从获取用户信息的手动授权就可以看出来，腾讯对用户隐私相关都比较严格，都需要用户手动确认（老实说，为了这种授权，改来改去好多次了），这是好事（不改能咋办）啊">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-03T09:17:10.991Z">
+<meta property="og:updated_time" content="2019-12-30T08:21:27.555Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="小程序通过userInfo信息解析unionId为null问题">
-<meta name="twitter:description" content="简述最近在开发一款小程序，因人手不足，我就来充数了~ 而我们测试一直在提醒我，今天抽时间看了下，具体描述和解决过程请戳下面">
+<meta name="twitter:title" content="小程序订阅消息拒绝后，如何引导开启">
+<meta name="twitter:description" content="最近小程序收到消息，将要在2020年1月10号下线模板消息下发功能，所有的消息订阅都需要用户手动授权同意。老实说从获取用户信息的手动授权就可以看出来，腾讯对用户隐私相关都比较严格，都需要用户手动确认（老实说，为了这种授权，改来改去好多次了），这是好事（不改能咋办）啊">
 
 
 
@@ -131,13 +131,13 @@
 
 
 
-  <link rel="canonical" href="http://blog.duanshaojie.cn/2019/08/03/miniprogram/小程序通过userInfo信息解析unionId为null问题/"/>
+  <link rel="canonical" href="http://blog.duanshaojie.cn/2019/12/30/miniprogram/小程序订阅消息拒绝后，如何引导开启/"/>
 
 
 
 
 
-  <title>小程序通过userInfo信息解析unionId为null问题 | 人生有多少个七年</title>
+  <title>小程序订阅消息拒绝后，如何引导开启 | 人生有多少个七年</title>
   
 
 
@@ -297,7 +297,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.duanshaojie.cn/2019/08/03/miniprogram/小程序通过userInfo信息解析unionId为null问题/">
+    <link itemprop="mainEntityOfPage" href="http://blog.duanshaojie.cn/2019/12/30/miniprogram/小程序订阅消息拒绝后，如何引导开启/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="四">
@@ -314,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">小程序通过userInfo信息解析unionId为null问题</h1>
+          <h1 class="post-title" itemprop="name headline">小程序订阅消息拒绝后，如何引导开启</h1>
         
 
         <div class="post-meta">
@@ -326,8 +326,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-03T17:19:02+08:00">
-                2019-08-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-30T16:19:54+08:00">
+                2019-12-30
               </time>
             
 
@@ -386,34 +386,26 @@
       
 
       
-        <h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>最近在开发一款小程序，因人手不足，我就来充数了~ 而我们测试一直在提醒我，今天抽时间看了下，<br>具体描述和解决过程请戳下面</p>
+        <p>最近小程序收到消息，将要在2020年1月10号下线模板消息下发功能，所有的消息订阅都需要用户手动授权同意。<br>老实说从获取用户信息的手动授权就可以看出来，腾讯对用户隐私相关都比较严格，都需要用户手动确认（老实说，为了这种授权，改来改去好多次了），这是好事（不改能咋办）啊</p>
 <a id="more"></a>
-<h2 id="问题重现"><a href="#问题重现" class="headerlink" title="问题重现"></a>问题重现</h2><ul>
-<li><p>由于项目不保证用户关注公众号，所以只能通过解密getUserInfo中的encryptedData获取</p>
-</li>
-<li><p>然后得有两个端的设备（手机，微信开发者工具）；</p>
-</li>
-<li><p>先在微信开发者工具登录成功，然后使用手机登录踢掉，最后在微信开发者工具上重新登录，<br>问题出现</p>
-</li>
-<li><p>因无法取到unionId导致无法登录</p>
-</li>
-</ul>
-<h2 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h2><ul>
-<li>这边出现问题，抛出的错误不明显，所以我到k8s上查看错误日志，发现日志如下：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">javax.crypto.BadPaddingException: pad block corrupted</span><br><span class="line">	at org.bouncycastle.jcajce.provider.symmetric.util.BaseBlockCipher$BufferedGenericBlockCipher.doFinal(Unknown Source)</span><br><span class="line">	at org.bouncycastle.jcajce.provider.symmetric.util.BaseBlockCipher.engineDoFinal(Unknown Source)</span><br><span class="line">	at javax.crypto.Cipher.doFinal(Cipher.java:2164)</span><br><span class="line">	at com.galaxy.base.business.impl.wechat.WechatUtil.decryptOfDiyIV(WechatUtil.java:78)</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>单看错误不知道是啥意思，google看是AES加解密错误</p>
+<h2 id="授权"><a href="#授权" class="headerlink" title="授权"></a>授权</h2><p>其实这部分的授权看看文档就知道,<a href="https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/subscribe-message.html" target="_blank" rel="noopener">地址点这里</a><br>注意：该订阅授权仅从基础库2.8.2开始，所以需要做兼容处理（<a href="https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html" target="_blank" rel="noopener">版本兼容点这里</a>）</p>
 <ul>
-<li>然后我多试了几次，还好我们的日志很完整，我发现一个很有趣的问题，就是登出以后再登录的时候，<br>一旦session_key与上一次一样就能够成功，而一旦不一样就无法解密。基本确定是session_key有问题，<br>然后看了文档《<a href="&quot;https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/signature.html&quot;">开放数据校验与解密</a>》中的如下介绍：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">会话密钥 session_key 有效性</span><br><span class="line">开发者如果遇到因为 session_key 不正确而校验签名失败或解密失败，请关注下面几个与 session_key 有关的注意事项。</span><br><span class="line"></span><br><span class="line">wx.login 调用时，用户的 session_key 可能会被更新而致使旧 session_key 失效（刷新机制存在最短周期，如果同一个用户短时间内多次调用 wx.login，并非每次调用都导致 session_key 刷新）。开发者应该在明确需要重新登录时才调用 wx.login，及时通过 auth.code2Session 接口更新服务器存储的 session_key。</span><br><span class="line">微信不会把 session_key 的有效期告知开发者。我们会根据用户使用小程序的行为对 session_key 进行续期。用户越频繁使用小程序，session_key 有效期越长。</span><br><span class="line">开发者在 session_key 失效时，可以通过重新执行登录流程获取有效的 session_key。使用接口 wx.checkSession可以校验 session_key 是否有效，从而避免小程序反复执行登录流程。</span><br><span class="line">当开发者在实现自定义登录态时，可以考虑以 session_key 有效期作为自身登录态有效期，也可以实现自定义的时效性策略。</span><br></pre></td></tr></table></figure>
+<li><p>编写用户点击按钮</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">view</span> <span class="attr">bindtap</span>=<span class="string">"redirectMyInquiry"</span> <span class="attr">class</span>=<span class="string">'btn-purple'</span>&gt;</span>XXX<span class="tag">&lt;/<span class="name">view</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取授权<br>这里根据文档可以知道，在iOS客户端版本7.0.5版本、Android客户端7.0.6版本之前的一次订阅只支持一个模板消息，所以这里要特殊进行处理</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">redirectMyInquiry: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> that = <span class="keyword">this</span>;</span><br><span class="line">  <span class="comment">//非引导</span></span><br><span class="line">  wx.requestSubscribeMessage(&#123;</span><br><span class="line">    <span class="comment">//这里填写模板ID</span></span><br><span class="line">    tmplIds: [],</span><br><span class="line">    success(res) &#123;</span><br><span class="line">      that.gotoNext();</span><br><span class="line">    &#125;,fail(errRes) &#123;</span><br><span class="line">      that.gotoNext();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<h1 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h1><ul>
-<li><p>原来每次使用wx.login会更新session_key,看了我们的代码确实有问题，我简单写下我们原来的逻辑,<br>每次都是先获取到encryptedData和iv,再获取login刷新了session_key，然后解析当然就错了~</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">//wxml</span><br><span class="line">&lt;button class=&apos;btn-purple&apos; open-type=&quot;getUserInfo&quot; bindgetuserinfo=&quot;weixinLogin&quot;&gt;</span><br><span class="line">        &lt;image src=&apos;../../images/common/icon_weixin.png&apos; mode=&apos;widthFix&apos;&gt;&lt;/image&gt;微信授权登录&lt;/button&gt;</span><br><span class="line"></span><br><span class="line">//js</span><br><span class="line">weixinLogin: function (e) &#123;</span><br><span class="line">    var encryptedData = e.detail.encryptedData;</span><br><span class="line">    var iv = e.detail.iv;</span><br><span class="line"></span><br><span class="line">        wx.login(&#123;</span><br><span class="line">          success: res =&gt; &#123;</span><br><span class="line">                wx.request(&#123;</span><br><span class="line">                  url: app.globalData.webUrl + &apos;/api/wechat/v1/getLogin&apos;,</span><br><span class="line">                  data: &#123;</span><br><span class="line">                    miniCode: res.code,</span><br><span class="line">                    encryptedData: encryptedData,</span><br><span class="line">                    iv: iv</span><br><span class="line">                  &#125;,</span><br><span class="line">                  header: &#123;</span><br><span class="line">                    &apos;content-type&apos;: &apos;application/x-www-form-urlencoded&apos;</span><br><span class="line">                  &#125;,</span><br><span class="line">                  method: &apos;GET&apos;,</span><br><span class="line">                  success: function (res) &#123;</span><br><span class="line">                    //success goto index</span><br><span class="line">                  &#125;</span><br><span class="line">          &#125;,</span><br><span class="line">          fail: res =&gt; &#123;</span><br><span class="line">            this.wetoast.toast(&#123; title: res.err_desc &#125;);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而往往我们的订阅又必不可少时怎么办，因为这个时候用户已经拒绝了，如果继续用上面的方法将永远无法开启（除非用户自己右上角开启）</p>
+<h2 id="死缠烂打授权法"><a href="#死缠烂打授权法" class="headerlink" title="死缠烂打授权法"></a>死缠烂打授权法</h2><ul>
+<li>重写授权方法如下<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">redirectMyInquiry: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> that = <span class="keyword">this</span>;</span><br><span class="line">  <span class="keyword">var</span> tmps = [];</span><br><span class="line">  <span class="comment">//同意授权然后跳转问诊单页</span></span><br><span class="line">  wx.requestSubscribeMessage(&#123;</span><br><span class="line">    tmplIds: tmps,</span><br><span class="line">    success(res) &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">"subscribeMessage success"</span>);</span><br><span class="line">      <span class="built_in">console</span>.log(res);</span><br><span class="line">      <span class="comment">//判断是否所有消息都已订阅，引导开启未订阅消息</span></span><br><span class="line">      <span class="keyword">if</span> (that.checkAllAccept(res, tmps)) &#123;</span><br><span class="line">        that.gotoNext();</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//引导开启</span></span><br><span class="line">        that.showModel(<span class="string">'是否开启所有订阅'</span>, <span class="string">'检测到含有未开启订阅，是否去开启所有订阅？'</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    fail(res) &#123;</span><br><span class="line">      <span class="comment">//errCode-20004 &amp; errMsg-requestSubscribeMessage:fail The main switch is switched off</span></span><br><span class="line">      <span class="comment">//引导询问开启消息订阅</span></span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">"subscribeMessage fail"</span>);</span><br><span class="line">      <span class="built_in">console</span>.log(res);</span><br><span class="line">      <span class="keyword">if</span> (res.errCode == <span class="number">20004</span>) &#123;</span><br><span class="line">        that.showModel(<span class="string">'是否授权开启消息订阅'</span>, <span class="string">'为了能够准确通知您问诊情况，请点击确认'</span>);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//其他错误暂不处理，直接往后走</span></span><br><span class="line">        that.gotoNext();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>解决也很简单，可以在onLoad的时候先获取code，然后去掉错误代码里的wx.login，简化带如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">//获取code 在onLoad内调用一下</span><br><span class="line">  getLogin()&#123;</span><br><span class="line">    var that = this;</span><br><span class="line">    wx.login(&#123;</span><br><span class="line">      success: res =&gt; &#123;</span><br><span class="line">        console.log(res);</span><br><span class="line">        that.setData(&#123;code: res.code&#125;)</span><br><span class="line">      &#125;,</span><br><span class="line">      fail: res =&gt; &#123;</span><br><span class="line">        this.wetoast.toast(&#123; title: res.err_desc &#125;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">//</span><br><span class="line">weixinLogin: function (e) &#123;</span><br><span class="line">    var that = this;</span><br><span class="line">    var encryptedData = e.detail.encryptedData;</span><br><span class="line">    var iv = e.detail.iv;</span><br><span class="line"></span><br><span class="line">    wx.request(&#123;</span><br><span class="line">      url: app.globalData.webUrl + &apos;/api/wechat/v1/getLogin&apos;,</span><br><span class="line">      data: &#123;</span><br><span class="line">        //这里改一下</span><br><span class="line">        miniCode: that.data.code,</span><br><span class="line">        encryptedData: encryptedData,</span><br><span class="line">        iv: iv</span><br><span class="line">      &#125;,</span><br><span class="line">      header: &#123;</span><br><span class="line">        &apos;content-type&apos;: &apos;application/x-www-form-urlencoded&apos;</span><br><span class="line">      &#125;,</span><br><span class="line">      method: &apos;GET&apos;,</span><br><span class="line">      success: function (res) &#123;</span><br><span class="line">        //success goto index</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ul>
+<p>主要逻辑是这样的，当用户选择了“拒绝，不再提示”之后，再调用wx.requestSubscribeMessage授权时，将进入fail里，且错误信息如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &apos;errCode&apos;: 20004,</span><br><span class="line">    &apos;errMsg&apos;: &apos;requestSubscribeMessage:fail The main switch is switched off&apos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>所以当出现这个错误的时候就去引导用户开启如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">showModel: <span class="function"><span class="keyword">function</span> (<span class="params">titleStr,contentStr</span>) </span>&#123;</span><br><span class="line">  wx.showModal(&#123;</span><br><span class="line">    title: titleStr,</span><br><span class="line">    content: contentStr,</span><br><span class="line">    success: <span class="function"><span class="keyword">function</span> (<span class="params">res</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (res.cancel) &#123;</span><br><span class="line">        that.gotoNext();</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        wx.openSetting(&#123;</span><br><span class="line">          success: <span class="function"><span class="keyword">function</span> (<span class="params">dataAu</span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(dataAu);</span><br><span class="line">            <span class="comment">//微信暂无判断订阅消息的权限，此处不做处理，需要用户再次点击</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>而上面的方法主要看wx.openSetting，这个方法是打开小程序设置的，可以监控用户的设置操作（不过这里暂时无法拿到修改的权限，所以仅打开设置，用户有没有修改我们不知道）</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>上次有碰到另一个用到wx.openSetting的地方，开启定位服务的时候，你不得不让用户选择开启，就需要用到死缠烂打授权法了哦~~<br>由于公司人手不足，小程序我仅是打打杂，有什么不足的地方还望各位大佬指正建议！</p>
 
       
     </div>
@@ -444,8 +436,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/07/30/java8/如何使用Optional摆脱空指针/" rel="next" title="如何使用Optional摆脱空指针">
-                <i class="fa fa-chevron-left"></i> 如何使用Optional摆脱空指针
+              <a href="/2019/12/25/java/手写JDK动态代理/" rel="next" title="手写JDK动态代理">
+                <i class="fa fa-chevron-left"></i> 手写JDK动态代理
               </a>
             
           </div>
@@ -453,10 +445,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/08/08/NIO/JAVA NIO简单入门/" rel="prev" title="JAVA NIO简单入门">
-                JAVA NIO简单入门 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -644,7 +632,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简述"><span class="nav-number">1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题重现"><span class="nav-number">2.</span> <span class="nav-text">问题重现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#排查"><span class="nav-number">3.</span> <span class="nav-text">排查</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决"><span class="nav-number"></span> <span class="nav-text">解决</span></a></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#授权"><span class="nav-number">1.</span> <span class="nav-text">授权</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死缠烂打授权法"><span class="nav-number">2.</span> <span class="nav-text">死缠烂打授权法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li></ol></div>
             
 
           </div>
